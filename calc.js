@@ -2,18 +2,19 @@
 var Lexer = function Lexer(input) {
     this.input = input;
     this.lineno = 1;
+    this.cursor = 0;
 }
 
 /*
  *
  *  AST:
  *
- *    calc -> parem 
- *              | exp
+ *    calc ->  exp
  *
  *    parem -> '(' exp ')'
  *
  *    exp -> num rest
+ *              | parem
  *
  *    rest -> '+' exp
  *              | '-' exp
@@ -38,6 +39,7 @@ Lexer.prototype = {
         
         if (/^\n/.exec(this.input)) {
             this.lineno++;
+            this.cursor = 0;
             this.consume(1);
         } else if (blankCaptures = /^[ \r\t]+/.exec(this.input)) {
             this.consume(blankCaptures[0].length);
@@ -50,6 +52,7 @@ Lexer.prototype = {
     },
 
     consume: function(size) {
+        this.cursor += size;
         this.input = this.input.substr(size);
     },
 
@@ -57,17 +60,18 @@ Lexer.prototype = {
         return {
                 type: type,
                 val: value,
-                lineno: this.lineno
+                lineno: this.lineno,
+                cursor: this.cursor
                };
     },
 
     next: function() {
-        var token = this.parem() || this.exp();
+        var token = this.exp();
         return token;
     },
 
     exp: function() {
-        var token = this.num();
+        var token = this.parem() || this.num();
         var rest;
         if (
             rest = this.add()
@@ -121,13 +125,13 @@ Lexer.prototype = {
     },
 
     num: function() {
-        var number = /^([0-9]+)/;
+        var number = /^(-?[0-9]+)/;
         var captures;
 
         if (captures = this.scan(number)) {
-            return this.token('Number', captures[1]);
+            return this.token('Number', parseInt(captures[1]));
         } else {
-            throw new Error('Expected a number on line ' + this.lineno);
+            throw new Error('Expected a number on line ' + this.lineno + ':' + this.cursor);
         }
     }
 
