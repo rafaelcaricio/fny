@@ -1,6 +1,6 @@
 var vows = require('vows'),
     assert = require('assert'),
-    Lexer = require('../calc.js').Lexer;
+    Lexer = require('../lexer');
 
 vows.describe('The Lexer').addBatch({
     'when I create a new instance': {
@@ -14,19 +14,41 @@ vows.describe('The Lexer').addBatch({
             assert.equal(topic.input, 'my input');
         }
     },
-    'when I send "1" as input': {
+    'when I create a new instance with a empty value': {
         topic: function() {
-            var lex = new Lexer('1');
+            var lex = new Lexer('');
             return lex.next();
         },
-        'the first token should be a object': function (topic) {
-            assert.isObject(topic);
+        'the token should be a EOF': function(topic) {
+            assert.equal(topic.type, 'EOF');
+        }
+    },
+    'when I send "1" as input': {
+        topic: function() {
+            return new Lexer('1');
         },
-        'the first token should be a number': function(topic) {
-            assert.equal(topic.type, 'Number');
+        'the first token': {
+            topic: function(lex) {
+                return lex.next();
+            },
+            'should be a object': function (topic) {
+                assert.isObject(topic);
+            },
+            'should be a number': function(topic) {
+                assert.equal(topic.type, 'Number');
+            },
+            'the token value should be 1': function(topic) {
+                assert.equal(topic.val, 1);
+            }
         },
-        'the token value should be 1': function(topic) {
-            assert.equal(topic.val, 1);
+        'if we call 2 times': {
+            topic: function(lex) {
+                lex.next();
+                return lex.next();
+            },
+            'the type of the last token shold be': function(topic) {
+                assert.equal(topic.type, 'EOF');
+            }
         }
     },
     'when I send "11" as input': {
