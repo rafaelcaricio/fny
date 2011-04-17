@@ -50,6 +50,24 @@ vows.describe('The Lexer').addBatch({
             assert.equal(topic.val, 1);
         }
     },
+    'when I send "4 * 5" as input': {
+        topic: function() {
+            var lex = new Lexer('4 * 5');
+            return lex.next();
+        },
+        'the token shold be Mult': function(topic) {
+            assert.equal(topic.type, 'Mult');
+        }
+    },
+    'when I send "8 / 2" as input': {
+        topic: function() {
+            var lex = new Lexer('8 / 2');
+            return lex.next();
+        },
+        'the token shold be Div': function(topic) {
+            assert.equal(topic.type, 'Div');
+        }
+    },
     'when I send "(123)" as input': {
         topic: function() {
             var lex = new Lexer('(123)');

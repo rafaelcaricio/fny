@@ -76,6 +76,8 @@ Lexer.prototype = {
         if (
             rest = this.add()
                 || this.sub()
+                || this.mult()
+                || this.div()
                 ) {
             rest.left = token;
             token = rest;
@@ -89,6 +91,30 @@ Lexer.prototype = {
 
         if (this.scan(sub)) {
             token = this.token('Sub', '-');
+            token.right = this.exp();
+        }
+
+        return token;
+    },
+    
+    mult: function() {
+        var mult = /^\*/;
+        var token;
+
+        if (this.scan(mult)) {
+            token = this.token('Mult', '*');
+            token.right = this.exp();
+        }
+
+        return token;
+    },
+ 
+    div: function() {
+        var div = /^\//;
+        var token;
+
+        if (this.scan(div)) {
+            token = this.token('Div', '/');
             token.right = this.exp();
         }
 
