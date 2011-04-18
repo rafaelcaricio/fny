@@ -35,7 +35,7 @@ vows.describe('The Lexer').addBatch({
                 assert.isObject(topic);
             },
             'should be a number': function(topic) {
-                assert.equal(topic.type, 'Number');
+                assert.equal(topic.type, 'Num');
             },
             'the token value should be 1': function(topic) {
                 assert.equal(topic.val, 1);
@@ -57,7 +57,7 @@ vows.describe('The Lexer').addBatch({
             return lex.next();
         },
         'the first token should be a number': function(topic) {
-            assert.equal(topic.type, 'Number');
+            assert.equal(topic.type, 'Num');
         },
         'the value should be 11': function(topic) {
             assert.equal(topic.val, 11);
@@ -115,7 +115,7 @@ vows.describe('The Lexer').addBatch({
                 assert.isObject(topic);
             },
             'the type of token shold be Number': function(topic) {
-                assert.equal(topic.type, 'Number');
+                assert.equal(topic.type, 'Num');
             },
             'the value of token should be 1': function(topic) {
                 assert.equal(topic.val, 1);
@@ -129,7 +129,7 @@ vows.describe('The Lexer').addBatch({
                 assert.isObject(topic);
             },
             'the type of token shold be Number': function(topic) {
-                assert.equal(topic.type, 'Number');
+                assert.equal(topic.type, 'Num');
             },
             'the value of token should be 2': function(topic) {
                 assert.equal(topic.val, 2);
@@ -169,7 +169,7 @@ vows.describe('The Lexer').addBatch({
             return lex.next();
         },
         'the token type shold be a Number': function(topic) {
-            assert.equal(topic.type, 'Number');
+            assert.equal(topic.type, 'Num');
         },
         'the token value shold be -2': function(topic) {
             assert.equal(topic.val, -2);
@@ -191,7 +191,7 @@ vows.describe('The Lexer').addBatch({
                 assert.isObject(topic);
             },
             'the type of token shold be Number': function(topic) {
-                assert.equal(topic.type, 'Number');
+                assert.equal(topic.type, 'Num');
             },
             'the value of token should be -2': function(topic) {
                 assert.equal(topic.val, -2);
@@ -214,7 +214,7 @@ vows.describe('The Lexer').addBatch({
                 assert.isObject(topic);
             },
             'the type of token shold be Number': function(topic) {
-                assert.equal(topic.type, 'Number');
+                assert.equal(topic.type, 'Num');
             },
             'the value of token should be -34569': function(topic) {
                 assert.equal(topic.val, -34569);
@@ -228,7 +228,7 @@ vows.describe('The Lexer').addBatch({
                 assert.isObject(topic);
             },
             'the type of token shold be Number': function(topic) {
-                assert.equal(topic.type, 'Number');
+                assert.equal(topic.type, 'Num');
             },
             'the value of token should be -439843': function(topic) {
                 assert.equal(topic.val, -439843);
@@ -255,7 +255,7 @@ vows.describe('The Lexer').addBatch({
                     return token.left;
                 },
                 'the type of token shold be Number': function(topic) {
-                    assert.equal(topic.type, 'Number');
+                    assert.equal(topic.type, 'Num');
                 },
                 'the value of token should be 45': function(topic) {
                     assert.equal(topic.val, 45);
@@ -266,7 +266,7 @@ vows.describe('The Lexer').addBatch({
                     return token.right;
                 },
                 'the type of token shold be Number': function(topic) {
-                    assert.equal(topic.type, 'Number');
+                    assert.equal(topic.type, 'Num');
                 },
                 'the value of token should be 2': function(topic) {
                     assert.equal(topic.val, 2);
@@ -285,7 +285,7 @@ vows.describe('The Lexer').addBatch({
                     return token.right;
                 },
                 'the type of token shold be Number': function(topic) {
-                    assert.equal(topic.type, 'Number');
+                    assert.equal(topic.type, 'Num');
                 },
                 'the value of token should be 9': function(topic) {
                     assert.equal(topic.val, 9);
@@ -303,7 +303,7 @@ vows.describe('The Lexer').addBatch({
                         return token.left;
                     },
                     'the type of token shold be Number': function(topic) {
-                        assert.equal(topic.type, 'Number');
+                        assert.equal(topic.type, 'Num');
                     },
                     'the value of token should be 346': function(topic) {
                         assert.equal(topic.val, 346);
@@ -314,7 +314,7 @@ vows.describe('The Lexer').addBatch({
                         return token.right;
                     },
                     'the type of token shold be Number': function(topic) {
-                        assert.equal(topic.type, 'Number');
+                        assert.equal(topic.type, 'Num');
                     },
                     'the value of token should be 7': function(topic) {
                         assert.equal(topic.val, 7);

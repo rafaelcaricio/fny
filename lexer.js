@@ -1,5 +1,9 @@
 
 var Lexer = module.exports = function(input) {
+    if (input == null) {
+        throw new Error('The input value should be passed!');
+    }
+
     this.input = input;
     this.lineno = 1;
     this.cursor = 0;
@@ -162,7 +166,7 @@ Lexer.prototype = {
         var captures;
 
         if (captures = this.scan(number)) {
-            return this.token('Number', parseInt(captures[1]));
+            return this.token('Num', captures[1]);
         } else {
             throw new Error('Expected a number at ' + this.lineno + ':' + this.cursor);
         }
