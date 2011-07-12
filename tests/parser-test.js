@@ -100,13 +100,22 @@ vows.describe('The Parser').addBatch({
             assert.equal(topic.execute(), 20);
         }
     },
-    'when I parse "6 - 2 - 1"': {
+    'when I parse "6 - 1 - 3"': {
         topic: function() {
-            var parser = new Parser('6 - 2 - 1');
+            var parser = new Parser('6 - 1 - 3');
             return parser.parse();
         },
-        'the return of execution shold be 3': function(topic) {
-            assert.equal(topic.execute(), 3);
+        'the return of execution shold be 2': function(topic) {
+            assert.equal(topic.execute(), 2);
+        }
+    },
+    'when I parse "3 * (4 + 5 - ( 3 * 6) - 2 * 3 * 4  + 5 * 6 - 2) - 1"': {
+        topic: function() {
+            var parser = new Parser('3 * (4 + 5 - ( 3 * 6) - 2 * 3 * 4  + 5 * 6 - 2) - 1');
+            return parser.parse();
+        },
+        'the return of execution shold be -16': function(topic) {
+            assert.equal(topic.execute(), -16);
         }
     }
 }).export(module);
