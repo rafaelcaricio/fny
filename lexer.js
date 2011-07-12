@@ -81,73 +81,75 @@ Lexer.prototype = {
         return token;
     },
 
+    verifyPrecedence: function(token, left, right) {
+        token.left = left;
+        if ((right.type == "Add" || right.type == "Sub" ) && !right.has_parem) {
+            token.right = right.left;
+            right.left = token;
+            token = right;
+        } else {
+            token.right = right;
+        }
+        return token;
+    },
+
     exp: function() {
         var token = this.parem() || this.num();
         var rest;
         if (
-            rest = this.add()
-                || this.sub()
-                || this.mult()
-                || this.div()
+            rest = this.add(token)
+                || this.sub(token)
+                || this.mult(token)
+                || this.div(token)
                 ) {
-            rest.left = token;
             token = rest;
         }
         return token;
     },
 
-    sub: function() {
+    sub: function(left) {
         var sub = /^-/;
         var token;
         if (this.scan(sub)) {
             token = this.token('Sub', '-');
+            token.left = left;
             token.right = this.exp();
         }
 
         return token;
     },
 
-    mult: function() {
+    mult: function(left) {
         var mult = /^\*/;
         var token;
 
         if (this.scan(mult)) {
             token = this.token('Mult', '*');
-            token.right = this.exp();
-            token = this.verifyPrecedence(token);
+            token = this.verifyPrecedence(token, left, this.exp());
         }
 
         return token;
     },
 
-    verifyPrecedence: function(token) {
-        if ((token.right.type == "Add" || token.right.type == "Sub" ) && !token.right.has_parem) {
-          token.left = token.right.left;
-          token.right.left = token;
-          token = token.right;
-        }
-        return token;
-    },
-
-    div: function() {
+    div: function(left) {
         var div = /^\//;
         var token;
 
         if (this.scan(div)) {
             token = this.token('Div', '/');
-            token.right = this.exp();
-            token = this.verifyPrecedence(token);
+            token = this.verifyPrecedence(token, left, this.exp());
         }
 
         return token;
     },
 
-    add: function() {
+    add: function(left) {
         var add = /^\+/;
         var token;
 
         if (this.scan(add)) {
             token = this.token('Add', '+');
+            token.left = left;
             token.right = this.exp();
         }
 

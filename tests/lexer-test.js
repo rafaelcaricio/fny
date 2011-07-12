@@ -348,6 +348,48 @@ vows.describe('The Lexer').addBatch({
         },
         'the token type shold be a Add': function(topic) {
             assert.equal(topic.type, "Add");
+        },
+        'the left side': {
+            topic: function(token) {
+                return token.left;
+            },
+            'should be a number': function(topic) {
+                assert.equal(topic.type, 'Num');
+            }
+        }
+    },
+    "when I send '2 Mult 2 Sum 2 Mult 2'": {
+        topic: function() {
+            var lex = new Lexer('2 * 2 + 2 * 2');
+            return lex.next();
+        },
+        'the token type shold be a Add': function(topic) {
+            assert.equal(topic.type, "Add");
+        },
+        "the left side": {
+            topic: function(token) {
+                return token.left;
+            },
+            "should be Mult": function(topic) {
+                assert.equal(topic.type, 'Mult');
+            }
+        },
+        "the right side": {
+            topic: function(token) {
+                return token.right;
+            },
+            "should be Mult": function(topic) {
+                assert.equal(topic.type, 'Mult');
+            }
+        }
+    },
+    "when I send '2 Mult 2 Sum 2 Mult 2 Add 2 Mult 2'": {
+        topic: function() {
+            var lex = new Lexer('2 * 2 + 2 * 2 + 2 * 2');
+            return lex.next();
+        },
+        'the token type shold be a Add': function(topic) {
+            assert.equal(topic.type, "Add");
         }
     },
     "when I send '(1 Sum 2) Mult 3'": {
@@ -371,6 +413,15 @@ vows.describe('The Lexer').addBatch({
     "when I send '3 Sum 2 Div 1'": {
         topic: function() {
             var lex = new Lexer('3 + 2 / 1');
+            return lex.next();
+        },
+        'the token type shold be a Add': function(topic) {
+            assert.equal(topic.type, "Add");
+        }
+    },
+    "when I send '5 Mult 2 Add 2 Mult 2 Add 3 Mult 2'": {
+        topic: function() {
+            var lex = new Lexer('5 * 2 + 2 * 2 + 3 * 2');
             return lex.next();
         },
         'the token type shold be a Add': function(topic) {

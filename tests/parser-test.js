@@ -81,6 +81,33 @@ vows.describe('The Parser').addBatch({
         'the return of execution shold be 10': function(topic) {
             assert.equal(topic.execute(), 10);
         }
+    },
+    'when I parse "5+10/(1+1)"': {
+        topic: function() {
+            var parser = new Parser('5+10/(1+1)');
+            return parser.parse();
+        },
+        'the return of execution shold be 10': function(topic) {
+            assert.equal(topic.execute(), 10);
+        }
+    },
+    'when I parse "5*2 + 2*2 + 3*2"': {
+        topic: function() {
+            var parser = new Parser('5*2 + 2*2 + 3*2');
+            return parser.parse();
+        },
+        'the return of execution shold be 20': function(topic) {
+            assert.equal(topic.execute(), 20);
+        }
+    },
+    'when I parse "6 - 2 - 1"': {
+        topic: function() {
+            var parser = new Parser('6 - 2 - 1');
+            return parser.parse();
+        },
+        'the return of execution shold be 3': function(topic) {
+            assert.equal(topic.execute(), 3);
+        }
     }
 }).export(module);
  
