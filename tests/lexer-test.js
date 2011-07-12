@@ -322,5 +322,59 @@ vows.describe('The Lexer').addBatch({
                 }
             }
         }
+    },
+    "when I send '1 Mult (2 Sum 3)'": {
+        topic: function() {
+            var lex = new Lexer('1 * (2 + 3)');
+            return lex.next();
+        },
+        'the token type shold be a Mult': function(topic) {
+            assert.equal(topic.type, "Mult");
+        }
+    },
+    "when I send '1 Mult 2 Sum 3'": {
+        topic: function() {
+            var lex = new Lexer('1 * 2 + 3');
+            return lex.next();
+        },
+        'the token type shold be a Add': function(topic) {
+            assert.equal(topic.type, "Add");
+        }
+    },
+    "when I send '1 Sum 2 Mult 3'": {
+        topic: function() {
+            var lex = new Lexer('1 + 2 * 3');
+            return lex.next();
+        },
+        'the token type shold be a Add': function(topic) {
+            assert.equal(topic.type, "Add");
+        }
+    },
+    "when I send '(1 Sum 2) Mult 3'": {
+        topic: function() {
+            var lex = new Lexer('(1 + 2) * 3');
+            return lex.next();
+        },
+        'the token type shold be a Mult': function(topic) {
+            assert.equal(topic.type, "Mult");
+        }
+    },
+    "when I send '2 Div 1 Sum 3'": {
+        topic: function() {
+            var lex = new Lexer('2 / 1 + 3');
+            return lex.next();
+        },
+        'the token type shold be a Add': function(topic) {
+            assert.equal(topic.type, "Add");
+        }
+    },
+    "when I send '3 Sum 2 Div 1'": {
+        topic: function() {
+            var lex = new Lexer('3 + 2 / 1');
+            return lex.next();
+        },
+        'the token type shold be a Add': function(topic) {
+            assert.equal(topic.type, "Add");
+        }
     }
 }).export(module);

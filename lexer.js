@@ -99,7 +99,6 @@ Lexer.prototype = {
     sub: function() {
         var sub = /^-/;
         var token;
-
         if (this.scan(sub)) {
             token = this.token('Sub', '-');
             token.right = this.exp();
@@ -115,8 +114,18 @@ Lexer.prototype = {
         if (this.scan(mult)) {
             token = this.token('Mult', '*');
             token.right = this.exp();
+            token = this.verifyPrecedence(token);
         }
 
+        return token;
+    },
+
+    verifyPrecedence: function(token) {
+        if ((token.right.type == "Add" || token.right.type == "Sub" ) && !token.right.has_parem) {
+          token.left = token.right.left;
+          token.right.left = token;
+          token = token.right;
+        }
         return token;
     },
 
@@ -127,6 +136,7 @@ Lexer.prototype = {
         if (this.scan(div)) {
             token = this.token('Div', '/');
             token.right = this.exp();
+            token = this.verifyPrecedence(token);
         }
 
         return token;
@@ -153,6 +163,7 @@ Lexer.prototype = {
         if (this.scan(startParem)) {
 
             token = this.exp();
+            token.has_parem = true;
 
             if (!this.scan(endParem)) {
                 throw Error("Can't find end of parem in line " + startParemOnLine);
