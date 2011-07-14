@@ -15,16 +15,29 @@ var Lexer = module.exports = function(input) {
  *
  *    calc ->  exp
  *
- *    parem -> '(' exp ')'
+ *    exp -> binary_exp
  *
- *    exp -> num rest
- *              | parem
- *
- *    rest -> '+' exp
+ *    unary_exp -> '+' exp
  *              | '-' exp
  *              | '*' exp
  *              | '/' exp
  *              | &
+ *
+ *    binary_exp -> add_exp
+ *
+ *    add_exp -> sub_exp ( '+' sub_exp )?
+ *
+ *    sub_exp -> mult_exp ( '-' mult_exp )?
+ *
+ *    mult_exp -> div_exp ( '*' div_exp )?
+ *
+ *    div_exp -> primary_exp ( '/' primary_exp )?
+ *
+ *    primary_exp -> num
+ *              | parem
+ *              | unary_exp
+ *
+ *    parem -> '(' exp ')'
  *
  *    num -> '0'
  *              | '1'
@@ -36,6 +49,13 @@ var Lexer = module.exports = function(input) {
  */
 
 Lexer.prototype = {
+
+    tokens: {
+        'Add': '+',
+        'Sub': '-',
+        'Mult': '*',
+        'Div': '/'
+    },
 
     scan: function(regexp) {
         var captures;
@@ -62,11 +82,15 @@ Lexer.prototype = {
 
     token: function(type, value) {
         return {
-                type: type,
-                val: value,
-                lineno: this.lineno,
-                cursor: this.cursor
-               };
+            type: type,
+            val: value,
+            lineno: this.lineno,
+            cursor: this.cursor
+        };
+    },
+
+    primary_token: function(type) {
+        return this.token(type, this.tokens[type]);
     },
 
     next: function() {
@@ -81,78 +105,50 @@ Lexer.prototype = {
         return token;
     },
 
-    verifyPrecedence: function(token, left, right) {
-        token.left = left;
-        if ((right.type == "Add" || right.type == "Sub" ) && !right.has_parem) {
-            token.right = right.left;
-            right.left = token;
-            token = right;
-        } else {
-            token.right = right;
-        }
-        return token;
-    },
-
     exp: function() {
+        var token = this.binary_exp();
+        return token;
+    },
+
+    binary_exp: function() {
+        return this.add_exp();
+    },
+
+    add_exp: function() {
+        return this.binary_exp_template(/^\+/, 'Add', 'sub_exp', 'sub_exp');
+    },
+
+    sub_exp: function() {
+        return this.binary_exp_template(/^-/, 'Sub', 'mult_exp', 'mult_exp');
+    },
+
+    mult_exp: function() {
+        return this.binary_exp_template(/^\*/, 'Mult', 'div_exp', 'div_exp');
+    },
+
+    div_exp: function(left) {
+        return this.binary_exp_template(/^\//, 'Div', 'primary_exp', 'primary_exp');
+    },
+
+    binary_exp_template: function(pattern, type, left, right) {
+        var new_token;
+        var token = this[left]();
+
+        while (this.scan(pattern)) {
+            new_token = this.primary_token(type);
+            new_token.left = token;
+            new_token.right = this[right]();
+            token = new_token;
+        }
+
+        return token;
+    },
+
+    primary_exp: function() {
         var token = this.parem() || this.num();
-        var rest;
-        if (
-            rest = this.add(token)
-                || this.sub(token)
-                || this.mult(token)
-                || this.div(token)
-                ) {
-            token = rest;
+        if (!token) {
+            throw Error("Expected '(' or number in line " + this.lineno);
         }
-        return token;
-    },
-
-    sub: function(left) {
-        var sub = /^-/;
-        var token;
-        if (this.scan(sub)) {
-            token = this.token('Sub', '-');
-            token.left = left;
-            token.right = this.exp();
-        }
-
-        return token;
-    },
-
-    mult: function(left) {
-        var mult = /^\*/;
-        var token;
-
-        if (this.scan(mult)) {
-            token = this.token('Mult', '*');
-            token = this.verifyPrecedence(token, left, this.exp());
-        }
-
-        return token;
-    },
-
-    div: function(left) {
-        var div = /^\//;
-        var token;
-
-        if (this.scan(div)) {
-            token = this.token('Div', '/');
-            token = this.verifyPrecedence(token, left, this.exp());
-        }
-
-        return token;
-    },
-
-    add: function(left) {
-        var add = /^\+/;
-        var token;
-
-        if (this.scan(add)) {
-            token = this.token('Add', '+');
-            token.left = left;
-            token.right = this.exp();
-        }
-
         return token;
     },
 
