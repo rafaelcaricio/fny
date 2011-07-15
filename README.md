@@ -5,7 +5,9 @@ The inspiration comes from Python, Lua and C programming languages.
 
 Example of a simple hello word:
 
+```python
     print "Hello world!"
+```
 
 A more elaborated example of use:
 
