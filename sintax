@@ -30,3 +30,7 @@ print { x, y: x + y }(2, 3)
 print { 1 + 2 }
 
 c  = ["f": 1, "g": 2]
+
+print a[>1]
+print a[<3]
+print a[>2<3]
