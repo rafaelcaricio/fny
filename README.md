@@ -1,5 +1,6 @@
+[UNAMED]
 
-My toy programming language implemented on top of Node.js.
+A toy programming language implemented on top of Node.js.
 
 The inspiration comes from Python, Lua and C programming languages.
 
@@ -24,3 +25,5 @@ A more elaborated example of use:
         print fib(i)
     }
 ```
+
+PS.: All examples currently not work. I'm implementing the language.
