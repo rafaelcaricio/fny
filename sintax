@@ -1,11 +1,11 @@
 
-fib = { x:
+sum = { x:
     { y:
         x + y
     }
 }
 
-print soma(2)(3)
+print sum(2)(3)
 
 if { x == 2:
     k = 2
