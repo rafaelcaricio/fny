@@ -1,0 +1,32 @@
+
+fib = { x:
+    { y:
+        x + y
+    }
+}
+
+print soma(2)(3)
+
+if { x == 2:
+    k = 2
+}
+
+a = [];
+for { i in 10:
+    a[i] = 2
+}
+
+for { f in a:
+    print a
+}
+
+while { i < a[1]:
+    print i
+    i--
+}
+
+print { x, y: x + y }(2, 3)
+
+print { 1 + 2 }
+
+c  = ["f": 1, "g": 2]
