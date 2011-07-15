@@ -9,7 +9,8 @@ Example of a simple hello word:
 
 A more elaborated example of use:
 
-    var fib = { n:
+```c
+    fib = { n:
         if { n == 0: 0 }
         if { n == 1: 1 }
         else {
@@ -20,3 +21,4 @@ A more elaborated example of use:
     for { i in 10:
         print fib(i)
     }
+```
