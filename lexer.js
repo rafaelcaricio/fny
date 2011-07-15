@@ -17,25 +17,26 @@ var Lexer = module.exports = function(input) {
  *
  *    exp -> binary_exp
  *
- *    unary_exp -> '+' exp
- *              | '-' exp
- *              | '*' exp
- *              | '/' exp
- *              | &
- *
  *    binary_exp -> add_exp
  *
- *    add_exp -> sub_exp ( '+' sub_exp )?
+ *    add_exp -> sub_exp ( '+' sub_exp )*
  *
- *    sub_exp -> mult_exp ( '-' mult_exp )?
+ *    sub_exp -> mult_exp ( '-' mult_exp )*
  *
- *    mult_exp -> div_exp ( '*' div_exp )?
+ *    mult_exp -> div_exp ( '*' div_exp )*
  *
- *    div_exp -> primary_exp ( '/' primary_exp )?
+ *    div_exp -> unary_exp ( '/' unary_exp )*
+ *
+ *    unary_exp -> '++' exp
+ *              | '--' exp
+ *              | primary_exp ( '--' )?
+ *              | primary_exp ( '++' )?
  *
  *    primary_exp -> num
  *              | parem
- *              | unary_exp
+ *              | assignment
+ *
+ *    assignment -> name ( '=' exp )?
  *
  *    parem -> '(' exp ')'
  *
@@ -45,6 +46,8 @@ var Lexer = module.exports = function(input) {
  *              | '3'
  *              ...
  *              | '9'
+ *
+ *     name -> 'a' .. 'Z' ( 'a' .. 'Z' | '0' .. '9' )*
  *
  */
 
@@ -145,10 +148,24 @@ Lexer.prototype = {
     },
 
     primary_exp: function() {
-        var token = this.parem() || this.num();
+        var token = this.parem() || this.num() || this.assignment();
         if (!token) {
             throw Error("Expected '(' or number in line " + this.lineno);
         }
+        return token;
+    },
+
+    assignment: function() {
+        var assignment = /^=/;
+        var token = this.name();
+        
+        if (this.scan(assignment)) {
+            var aux = this.token('Assign', '=');
+            aux.id = token;
+            aux.value = this.exp();
+            token = aux;
+        }
+
         return token;
     },
 
@@ -176,8 +193,15 @@ Lexer.prototype = {
 
         if (captures = this.scan(number)) {
             return this.token('Num', captures[1]);
-        } else {
-            throw new Error('Expected a number at ' + this.lineno + ':' + this.cursor);
+        }
+    },
+
+    name: function() {
+        var id = /^([a-zA-Z][a-zA-Z0-9]+)/;
+        var captures;
+
+        if (captures = this.scan(id)) {
+            return this.token('Id', captures[1]);
         }
     }
 

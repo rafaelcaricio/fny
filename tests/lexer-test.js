@@ -265,5 +265,42 @@ vows.describe('The Lexer').addBatch({
         'the token type shold be a Add': function(topic) {
             assert.equal(topic.type, "Add");
         }
+    },
+    "when I send 'rafael'": {
+        topic: function() {
+            var lex = new Lexer('rafael');
+            return lex.next();
+        },
+        'the type should be "Id"': function(topic) {
+            assert.equal(topic.type, 'Id');
+        },
+        'the value should be "name"': function(topic) {
+            assert.equal(topic.val, 'rafael');
+        }
+    },
+    "when I send 'result = 1'": {
+        topic: function() {
+            var lex = new Lexer('result = 1');
+            return lex.next();
+        },
+        'the type should be "Assing"': function(topic) {
+            assert.equal(topic.type, 'Assign');
+        },
+        'the "id"': {
+            topic: function(topic) {
+                return topic.id;
+            },
+            'the value should be "name"': function(topic) {
+                assert.equal(topic.val, 'result');
+            }
+        },
+        'the "value"': {
+            topic: function(topic) {
+                return topic.value;
+            },
+            'the value should be "1"': function(topic) {
+                assert.equal(topic.val, '1');
+            }
+        }
     }
 }).export(module);
