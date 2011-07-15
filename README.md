@@ -9,7 +9,7 @@ Example of a simple hello word:
 
 A more elaborated example of use:
 
-```c
+```python
     fib = { n:
         if { n == 0: 0 }
         if { n == 1: 1 }
