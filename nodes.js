@@ -127,7 +127,6 @@ Call.prototype.execute = function(context) {
     if (targetFunction == undefined) {
         throw new Error("Undefined function for call at line " + this.lineno);
     }
-
     context.increment();
     result = targetFunction.apply(context, this.args.execute(context));
     context.pop();
