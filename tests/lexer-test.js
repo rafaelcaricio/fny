@@ -360,34 +360,88 @@ vows.describe('The Lexer').addBatch({
             assert.equal(topic.val, '1 + 1');
         }
     },
-    "when I send 'print 1'": {
+    "when I send 'print(1)'": {
         topic: function() {
-            var lex = new Lexer('print 1');
+            var lex = new Lexer('print(1)');
             return lex.next();
         },
-        'the type should be "Print"': function(topic) {
-            assert.equal(topic.type, 'Print');
+        'the type should be "Call"': function(topic) {
+            assert.equal(topic.type, 'Call');
+        },
+        'the type should be "Id"': function(topic) {
+            assert.equal(topic.val.type, 'Id');
+        },
+        'the val should be "print"': function(topic) {
+            assert.equal(topic.val.val, 'print');
         },
         'the value type should be "Num"': function(topic) {
-            assert.equal(topic.value.type, 'Num');
+            assert.equal(topic.arg_list.val[0].type, 'Num');
         },
         'the value should be "1"': function(topic) {
-            assert.equal(topic.value.val, '1');
+            assert.equal(topic.arg_list.val[0].val, '1');
         }
     },
-    "when I send 'print \"hello word!\"'": {
+    "when I send 'print(\"hello word!\")'": {
         topic: function() {
-            var lex = new Lexer('print "hello world!"');
+            var lex = new Lexer('print("hello world!")');
             return lex.next();
         },
-        'the type should be "Print"': function(topic) {
-            assert.equal(topic.type, 'Print');
+        'the type should be "Call"': function(topic) {
+            assert.equal(topic.type, 'Call');
         },
         'the value type should be "Num"': function(topic) {
-            assert.equal(topic.value.type, 'Str');
+            assert.equal(topic.arg_list.val[0].type, 'Str');
         },
         'the value should be "hello world!"': function(topic) {
-            assert.equal(topic.value.val, 'hello world!');
+            assert.equal(topic.arg_list.val[0].val, 'hello world!');
+        }
+    },
+    "when I send 'print(1+(2+3))'": {
+        topic: function() {
+            var lex = new Lexer('print(1+ (2 + 3))');
+            return lex.next();
+        },
+        'the type should be "Call"': function(topic) {
+            assert.equal(topic.type, 'Call');
+        },
+        'the value type should be "Num"': function(topic) {
+            assert.equal(topic.arg_list.val[0].type, 'Add');
+        }
+    },
+    "when I send '(print)(1)'": {
+        topic: function() {
+            var lex = new Lexer('(print)(1)');
+            return lex.next();
+        },
+        'the type should be "Call"': function(topic) {
+            assert.equal(topic.type, 'Call');
+        },
+        'the value type should be "Num"': function(topic) {
+            assert.equal(topic.arg_list.val[0].type, 'Num');
+        }
+    },
+    "when I send '(c)()'": {
+        topic: function() {
+            var lex = new Lexer('(c)()');
+            return lex.next();
+        },
+        'the type should be "Call"': function(topic) {
+            assert.equal(topic.type, 'Call');
+        },
+        'the value should be "c"': function(topic) {
+            assert.equal(topic.val.val, 'c');
+        },
+        'the argument list should be empty': function(topic) {
+            assert.isEmpty(topic.arg_list.val);
+        }
+    },
+    "when I send 'c(1, 2)'": {
+        topic: function() {
+            var lex = new Lexer('c(1, 2)');
+            return lex.next();
+        },
+        'the size of argument list should be 2': function(topic) {
+            assert.equal(topic.arg_list.val.length, 2);
         }
     }
 }).export(module);

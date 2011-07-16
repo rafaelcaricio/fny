@@ -24,9 +24,7 @@ var Lexer = module.exports = function(input) {
  *    program ->  stmt
  *              | exp
  *
- *    stmt -> print_stmt
- *
- *    print_stmt -> 'print' exp
+ *    stmt -> for_stmt
  *
  *    exp -> binary_exp
  *
@@ -46,11 +44,19 @@ var Lexer = module.exports = function(input) {
  *              | value_exp ( '++' )?
  *
  *    value_exp -> num
- *              | parem
  *              | string
+ *              | call
+ *              | &
+ *
+ *    call -> callable '(' exp_list ')'
+ *
+ *    callable -> parem
  *              | assignment
  *
  *    assignment -> id ( '=' exp )?
+ *
+ *    exp_list -> exp ( ',' exp )*
+ *                  | &
  *
  *    parem -> '(' exp ')'
  *
@@ -77,9 +83,10 @@ Lexer.prototype = {
     },
 
     keywords: [
-        'print',
+        'if',
         'for',
-        'while'
+        'while',
+        'in'
     ],
 
     scan: function(regexp) {
@@ -137,22 +144,6 @@ Lexer.prototype = {
     },
 
     stmt: function() {
-        return this.print_stmt();
-    },
-
-    print_stmt: function() {
-        var print = /^print/;
-        var token;
-        
-        if (this.scan(print)) {
-            token = this.token("Print", "print");
-            token.value = this.exp();
-            if (!token.value) {
-                throw Error("Can't find value for print in line " + this.lineno);
-            }
-        }
-
-        return token;
     },
 
     exp: function() {
@@ -183,7 +174,7 @@ Lexer.prototype = {
         var new_token;
         var token = this[left]();
 
-        while (this.scan(pattern)) {
+        while (token && this.scan(pattern)) {
             new_token = this.primary_token(type);
             new_token.left = token;
             new_token.right = this[right]();
@@ -194,10 +185,9 @@ Lexer.prototype = {
     },
 
     value_exp: function() {
-        return this.parem()
-                || this.num()
-                || this.assignment()
-                || this.string();
+        return this.num()
+                || this.string()
+                || this.call();
     },
 
     string: function() {
@@ -220,15 +210,57 @@ Lexer.prototype = {
         return token;
     },
 
+    call: function() {
+        var startCall = /^\(/;
+        var endCall = /^\)/;
+        var token = this.callable();
+        var startCallLine = this.lineno;
+
+        if (token && this.scan(startCall)) {
+
+            token = this.token("Call", token);
+            token.arg_list = this.exp_list();
+
+            if (!this.scan(endCall)) {
+                throw Error("Can't find end of call in line " + startCallLine);
+            }
+        }
+
+        return token;
+    },
+
+    callable: function() {
+        return this.parem()
+            || this.assignment()
+    },
+
+    exp_list: function() {
+        var separator = /^,/;
+        var token = this.token("ExpList", []);
+        var first = this.exp();
+
+        if (first) {
+            token.val.push(first);
+            while (this.scan(separator)) {
+                token.val.push(this.exp());
+            }
+        }
+
+        return token;
+    },
+
     assignment: function() {
         var assignment = /^=/;
         var token = this.id();
 
-        if (this.scan(assignment)) {
+        if (token && this.scan(assignment)) {
             var aux = this.token('Assign', '=');
             aux.id = token;
-            aux.value = this.exp();
-            token = aux;
+            if (aux.value = this.exp()) {
+                token = aux;
+            } else {
+                throw new Error("Expected value to assign in line " + this.lineno);
+            }
         }
 
         return token;
