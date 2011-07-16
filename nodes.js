@@ -1,14 +1,13 @@
-/*!
-* Jade - nodes - Node
-* Copyright(c) 2010 TJ Holowaychuk <tj@vision-media.ca>
-* MIT Licensed
-*/
+/**
+ * unamed programming language
+ * https://github.com/rafaelcaricio/unamed
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/mit-license
+ * Copyright (c) 2011 Rafael Caricio rafael@caricio.com
+ */
 
 var Node = function Node(){};
-
-/**
-* Inherit from `Array`.
-*/
 
 Node.prototype.__proto__ = Array.prototype;
 Node.prototype.execute = function(context) {};
@@ -17,10 +16,6 @@ Node.prototype.execute = function(context) {};
 var Block = function Block(node){
     if (node) this.push(node);
 };
-
-/**
-* Inherit from `Node`.
-*/
 
 Block.prototype.__proto__ = Node.prototype;
 Block.prototype.execute = function(context) {

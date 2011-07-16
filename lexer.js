@@ -1,3 +1,11 @@
+/**
+ * unamed programming language
+ * https://github.com/rafaelcaricio/unamed
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/mit-license
+ * Copyright (c) 2011 Rafael Caricio rafael@caricio.com
+ */
 
 var Lexer = module.exports = function(input) {
     if (input == null) {
