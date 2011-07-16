@@ -190,5 +190,23 @@ vows.describe('The Parser').addBatch({
         'the return of execution shold be "4"': function(topic) {
             assert.equal(topic.execute(new Context()), 4);
         }
+    },
+    'when I parse "myfunc = {x: x(1)} myfunc({y: y + 2})"': {
+        topic: function() {
+            var parser = new Parser('myfunc = {x: x(1)} myfunc({y: y + 2})');
+            return parser.parse();
+        },
+        'the return of execution shold be "3"': function(topic) {
+            assert.equal(topic.execute(new Context()), 3);
+        }
+    },
+    'when I parse "myfunc = {x: a = x b = 1 + 2 a(b)} myfunc({y: y + 2})"': {
+        topic: function() {
+            var parser = new Parser('myfunc = {x: a = x b = 1 + 2 a(b)} myfunc({y: y + 2})');
+            return parser.parse();
+        },
+        'the return of execution shold be "3"': function(topic) {
+            assert.equal(topic.execute(new Context()), 5);
+        }
     }
 }).export(module);
