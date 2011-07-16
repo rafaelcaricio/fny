@@ -443,5 +443,50 @@ vows.describe('The Lexer').addBatch({
         'the size of argument list should be 2': function(topic) {
             assert.equal(topic.arg_list.val.length, 2);
         }
+    },
+    "when I send block": {
+        topic: function() {
+            var lex = new Lexer('1\n2');
+            return lex.next();
+        },
+        'the type should be CodeBlock': function(topic) {
+            assert.equal(topic.type, 'CodeBlock');
+        }
+    },
+    "when I send block": {
+        topic: function() {
+            var lex = new Lexer('1 2');
+            return lex.next();
+        },
+        'the type should be CodeBlock': function(topic) {
+            assert.equal(topic.type, 'CodeBlock');
+        }
+    },
+    "when I send block": {
+        topic: function() {
+            var lex = new Lexer('1 + 2 3');
+            return lex.next();
+        },
+        'the type should be CodeBlock': function(topic) {
+            assert.equal(topic.type, 'CodeBlock');
+        }
+    },
+    "when I send block": {
+        topic: function() {
+            var lex = new Lexer('1 + 2 a(-2)');
+            return lex.next();
+        },
+        'the type should be CodeBlock': function(topic) {
+            assert.equal(topic.type, 'CodeBlock');
+        }
+    },
+    "when I send block": {
+        topic: function() {
+            var lex = new Lexer('1 + 2 (-1)');
+            return lex.next();
+        },
+        'the type should be CodeBlock': function(topic) {
+            assert.equal(topic.type, 'CodeBlock');
+        }
     }
 }).export(module);

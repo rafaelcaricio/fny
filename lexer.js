@@ -21,8 +21,12 @@ var Lexer = module.exports = function(input) {
  *
  *  AST:
  *
- *    program ->  stmt
- *              | exp
+ *    program -> code_block | EOF
+ *
+ *    code_block -> execution_block ( execution_block )*
+ *                  | &
+ *
+ *    execution_block -> stmt | exp
  *
  *    stmt -> for_stmt
  *
@@ -52,6 +56,11 @@ var Lexer = module.exports = function(input) {
  *
  *    callable -> parem
  *              | assignment
+ *              | func_value
+ *
+ *    func_value -> '{' ( id_list ':' )? code_block '}'
+ *
+ *    id_list -> id (',' id)
  *
  *    assignment -> id ( '=' exp )?
  *
@@ -130,10 +139,10 @@ Lexer.prototype = {
 
         if (this.input.length) {
 
-            token = this.stmt() 
-                        || this.exp();
+            token = this.code_block();
 
             if (!token || this.input.length) {
+                console.log(token, this.input);
                 throw Error("Invalid input!");
             }
         } else {
@@ -141,6 +150,30 @@ Lexer.prototype = {
         }
 
         return token;
+    },
+
+    code_block: function() {
+        var token = this.execution_block();
+
+        if (token) {
+            var block = this.token("CodeBlock", [token]);
+            var next_token;
+
+            while (next_token = this.execution_block()) {
+                block.val.push(next_token);
+            }
+
+            if (block.val.length > 1) {
+                token = block;
+            }
+        }
+
+        return token;
+    },
+
+    execution_block: function() {
+        return this.stmt()
+                    || this.exp();
     },
 
     stmt: function() {
@@ -218,6 +251,7 @@ Lexer.prototype = {
 
         if (token && this.scan(startCall)) {
 
+
             token = this.token("Call", token);
             token.arg_list = this.exp_list();
 
@@ -232,6 +266,33 @@ Lexer.prototype = {
     callable: function() {
         return this.parem()
             || this.assignment()
+            //|| this.func_value();
+    },
+
+    func_value: function() {
+        var startFunc = /^{/;
+        var endArgList = /^:/;
+        var endFunc = /^}/;
+        var startFuncLine = this.lineno;
+        var token;
+
+        if (token = this.scan(startFunc)) {
+            var args;
+
+            if (args = this.id_list()) {
+                if (!this.scan(endArgList)) {
+                    throw new Error("End of arg list not defined!");
+                }
+            }
+            
+            token = this.token("Func", this.code_block() );
+
+            if (!this.scan(endFunc)) {
+                throw Error("Can't find end of function in line " + startCallLine);
+            }
+        }
+
+        return token;
     },
 
     exp_list: function() {
