@@ -31,7 +31,7 @@ Block.prototype.execute = function(context) {
     }
 
     return result;
-};
+}
 
 
 var Num = function(token) {
@@ -42,8 +42,38 @@ var Num = function(token) {
 Num.prototype.__proto__ = Node.prototype;
 Num.prototype.execute = function(context) {
     return parseInt(this.value);
-};
+}
 
+var Id = function(token) {
+    this.lineno = token.lineno;
+    this.value = token.val;
+}
+
+Id.prototype.__proto__ = Node.prototype;
+Id.prototype.execute = function(context) {
+    return this.value;
+}
+
+var NString = function(token) {
+    this.lineno = token.lineno;
+    this.value = token.val;
+}
+
+NString.prototype.__proto__ = Node.prototype;
+NString.prototype.execute = function(context) {
+    return this.value;
+}
+
+var Assign = function(token) {
+    this.lineno = token.lineno;
+}
+
+Assign.prototype.__proto__ = Node.prototype;
+Assign.prototype.execute = function(context) {
+    var result = this.value.execute(context);
+    context.push(this.id.execute(context), result);
+    return result;
+}
 
 var Add = function(token) {
     this.lineno = token.lineno;
@@ -89,11 +119,24 @@ Div.prototype.execute = function(context) {
     return this.left.execute(context) / this.right.execute(context);
 }
 
+var Print = function(token) {
+    this.lineno = token.lineno;
+}
+
+Print.prototype.__proto__ = Node.prototype;
+Print.prototype.execute = function(context) {
+    console.log(this.value.execute(context));
+}
+
 module.exports = {
     Block: Block,
     Num: Num,
     Add: Add,
     Sub: Sub,
     Mult: Mult,
-    Div: Div
-};
+    Div: Div,
+    NString: NString,
+    Assign: Assign,
+    Id: Id,
+    Print: Print
+}

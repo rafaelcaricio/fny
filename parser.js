@@ -15,11 +15,21 @@ Parser.prototype = {
                 token.type != 'EOF'; 
                 token = this.lexer.next()) {
 
-            block.push(this.parseExp(token));
+            block.push(this.parseProgram(token));
 
         }
 
         return block;
+    },
+
+    parseProgram: function(token) {
+        return this['parse' + token.type](token);
+    },
+
+    parsePrint: function(token) {
+        var print = new nodes.Print(token);
+        print.value = this.parseExp(token.value);
+        return print;
     },
 
     parseExp: function(token) {
@@ -51,5 +61,20 @@ Parser.prototype = {
 
     parseDiv: function(token) {
         return this.parseBinaryOp(nodes.Div, token);
+    },
+    
+    parseStr: function(token) {
+        return new nodes.NString(token)
+    },
+
+    parseAssign: function(token) {
+        var assignment = new nodes.Assign(token);
+        assignment.id = this.parseId(token.id);
+        assignment.value = this.parseExp(token.value)
+        return assignment;
+    },
+
+    parseId: function(token) {
+        return new nodes.Id(token);
     }
 }

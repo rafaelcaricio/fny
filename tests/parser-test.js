@@ -1,7 +1,8 @@
 var vows = require('vows'),
     assert = require('assert'),
     Parser = require('../parser'),
-    nodes = require('../nodes');;
+    nodes = require('../nodes'),
+    Context = require('../context');
 
 vows.describe('The Parser').addBatch({
     'when I create a new instance': {
@@ -117,6 +118,41 @@ vows.describe('The Parser').addBatch({
         'the return of execution shold be -16': function(topic) {
             assert.equal(topic.execute(), -16);
         }
+    },
+    'when I parse "value = 1"': {
+        topic: function() {
+            var parser = new Parser('value = 1');
+            return parser.parse();
+        },
+        'the return of execution shold be 1': function(topic) {
+            assert.equal(topic.execute(new Context()), 1);
+        }
+    },
+    'when I parse "\"my string value\""': {
+        topic: function() {
+            var parser = new Parser('"my string value"');
+            return parser.parse();
+        },
+        'the return of execution shold be "my string value"': function(topic) {
+            assert.equal(topic.execute(), "my string value");
+        }
+    },
+    'when I parse "print "hello world""': {
+        topic: function() {
+            var parser = new Parser('print "hello world"');
+            return parser.parse(new Context());
+        },
+        'the return of execution shold be "undefined"': function(topic) {
+            assert.equal(topic.execute(), undefined);
+        }
+    },
+    'when I parse "print 1 + 2"': {
+        topic: function() {
+            var parser = new Parser('print 1 + 2');
+            return parser.parse(new Context());
+        },
+        'the return of execution shold be "undefined"': function(topic) {
+            assert.equal(topic.execute(), undefined);
+        }
     }
 }).export(module);
- 
