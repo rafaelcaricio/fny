@@ -45,3 +45,10 @@ c  = ["f": 1, "g": 2]
 print a[>1]
 print a[<3]
 print a[>2<3]
+
+# list comprehension
+print [x | x in a]
+
+# dict comprehension
+print [key : sum(2)(value) | key : value in c]
+
