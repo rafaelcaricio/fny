@@ -8,7 +8,19 @@
  */
 
 var Context = function(builtins) {
-    this.stack = [builtins || {}];
+    this.stack = [];
+    this.increment();
+    if (builtins) {
+        for (var i = 0; i < builtins.length; i++) {
+            this.push("print", {
+                arg_list: [1],
+                execute: function(execContext) {
+                    var x = execContext.get(1);
+                    return builtins["print"](x);
+                }
+            });
+        }
+    }
 }
 
 Context.prototype = {
@@ -17,25 +29,38 @@ Context.prototype = {
         this.stack.push({});
     },
 
-    _getDefinitionContext: function(id) {
-        for (var i = this.stack.length - 1; i >= 0; i--) {
-            if (this.stack[i][id]) {
-                return this.stack[i];
-            }
-        }
-        return this.stack[this.stack.length - 1];
-    },
-
     push: function(id, value) {
-        this._getDefinitionContext(id)[id] = value;
+        this.stack[this.stack.length - 1][id] = value;
     },
 
     get: function(id) {
-        return this._getDefinitionContext(id)[id];
+        for (var i = this.stack.length - 1; i >= 0; i--) {
+            if (this.stack[i][id]) {
+                return this.stack[i][id];
+            }
+        }
     },
 
     pop: function() {
         this.stack.pop();
+    },
+
+    snapshot: function() {
+        var clone = {};
+        for (var i = this.stack.length - 1; i >= 0; i--) {
+            for (key in this.stack[i]) {
+                if (clone[key] == undefined) {
+                    clone[key] = this.stack[i][key];
+                }
+            }
+        }
+        return clone;
+    },
+
+    bind: function(variables) {
+        for (key in variables) {
+            this.push(key, variables[key]);
+        }
     }
 }
 

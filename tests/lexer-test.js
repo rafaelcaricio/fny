@@ -587,5 +587,14 @@ vows.describe('The Lexer').addBatch({
         'the value type should be CodeBlock': function(topic) {
             assert.equal(topic.val.type, 'CodeBlock');
         }
+    },
+    "when I create a codeblock myfunc = {x:x+1} myfunc(3)": {
+        topic: function() {
+            var lex = new Lexer('myfunc = {x:x+1} myfunc(3)');
+            return lex.next();
+        },
+        'the value should be a CodeBlock': function(topic) {
+            assert.equal(topic.type, 'CodeBlock');
+        }
     }
 }).export(module);

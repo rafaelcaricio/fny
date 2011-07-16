@@ -67,12 +67,27 @@ Parser.prototype = {
 
     parseFunc: function(token) {
         var func = new nodes.Func(token);
-        func.args = this.parseIdList(token.arg_list);
+        func.value = this.parseCallable(token.val);
+        func.args_declaration = this.parseIdList(token.arg_list);
         return func;
     },
 
     parseIdList: function(token) {
-        return new nodes.IdList(token);
+        var idList = new nodes.IdList(token);
+        if (token.val) {
+            for (var i = 0; i < token.val.length; i++) {
+                idList.values.push(this.parseId(token.val[i]));
+            }
+        }
+        return idList;
+    },
+
+    parseCodeBlock: function(token) {
+        var codeBlock = new nodes.CodeBlock(token);
+        for (var i = 0; i < token.val.length; i++) {
+            codeBlock.values.push(this.parseExp(token.val[i]));
+        }
+        return codeBlock;
     },
 
     parseBinaryOp: function(exp, token) {
