@@ -488,5 +488,104 @@ vows.describe('The Lexer').addBatch({
         'the type should be CodeBlock': function(topic) {
             assert.equal(topic.type, 'CodeBlock');
         }
+    },
+    "when I create a func {}": {
+        topic: function() {
+            var lex = new Lexer('{}');
+            return lex.next();
+        },
+        'the type should be Func': function(topic) {
+            assert.equal(topic.type, 'Func');
+        }
+    },
+    "when I create a func {x}": {
+        topic: function() {
+            var lex = new Lexer('{x}');
+            return lex.next();
+        },
+        'the type should be Func': function(topic) {
+            assert.equal(topic.type, 'Func');
+        },
+        'the value should be a Id': function(topic) {
+            assert.equal(topic.val.type, 'Id');
+        }
+    },
+    "when I create a func {x:1}": {
+        topic: function() {
+            var lex = new Lexer('{x:1}');
+            return lex.next();
+        },
+        'the type should be Func': function(topic) {
+            assert.equal(topic.type, 'Func');
+        },
+        'the value should be a Num': function(topic) {
+            assert.equal(topic.val.type, 'Num');
+        },
+        'the argument list exists': function(topic) {
+            assert.equal(topic.arg_list.val.length, 1);
+        }
+    },
+    "when I create a func {x:}": {
+        topic: function() {
+            var lex = new Lexer('{x:}');
+            return lex.next();
+        },
+        'the type should be Func': function(topic) {
+            assert.equal(topic.type, 'Func');
+        },
+        'the value should be a Num': function(topic) {
+            assert.isNull(topic.val);
+        },
+        'the argument list exists': function(topic) {
+            assert.equal(topic.arg_list.val.length, 1);
+        }
+    },
+    "when I create a func {x: x + 1}": {
+        topic: function() {
+            var lex = new Lexer('{x: x + 1}');
+            return lex.next();
+        },
+        'the value should be a Add': function(topic) {
+            assert.equal(topic.val.type, 'Add');
+        },
+        'the argument list exists': function(topic) {
+            assert.equal(topic.arg_list.val.length, 1);
+        }
+    },
+    "when I create a func {x: x + 1}(2)": {
+        topic: function() {
+            var lex = new Lexer('{x: x + 1}(2)');
+            return lex.next();
+        },
+        'the value should be a Call': function(topic) {
+            assert.equal(topic.type, 'Call');
+        },
+        'the argument list exists': function(topic) {
+            assert.equal(topic.arg_list.val.length, 1);
+        }
+    },
+    "when I create a func {}()": {
+        topic: function() {
+            var lex = new Lexer('{}()');
+            return lex.next();
+        },
+        'the value should be a Call': function(topic) {
+            assert.equal(topic.type, 'Call');
+        },
+        'the argument list exists': function(topic) {
+            assert.equal(topic.arg_list.val.length, 0);
+        }
+    },
+    "when I create a func { 2 4 }": {
+        topic: function() {
+            var lex = new Lexer('{ 2 4 }');
+            return lex.next();
+        },
+        'the value should be a Func': function(topic) {
+            assert.equal(topic.type, 'Func');
+        },
+        'the value type should be CodeBlock': function(topic) {
+            assert.equal(topic.val.type, 'CodeBlock');
+        }
     }
 }).export(module);

@@ -58,7 +58,7 @@ var Lexer = module.exports = function(input) {
  *              | assignment
  *              | func_value
  *
- *    func_value -> '{' ( id_list ':' )? code_block '}'
+ *    func_value -> '{' ( id_list ':' )? | code_bock '}'
  *
  *    id_list -> id (',' id)
  *
@@ -88,7 +88,10 @@ Lexer.prototype = {
         'Add': '+',
         'Sub': '-',
         'Mult': '*',
-        'Div': '/'
+        'Div': '/',
+        'Comma': /^,/,
+        'Colon': /^:/,
+        'Id': /^([a-zA-Z_][a-zA-Z0-9_]*)/,
     },
 
     keywords: [
@@ -119,6 +122,27 @@ Lexer.prototype = {
     consume: function(size) {
         this.cursor += size;
         this.input = this.input.substr(size);
+    },
+
+    lookahead: function(expectedTokens) {
+        var isPredicted = true;
+        var snapshot = {
+            input: this.input,
+            lineno: this.lineno,
+            cursor: this.cursor
+        };
+        
+        for (var i = 0; i < expectedTokens.length; i++) {
+            if (!this.scan(expectedTokens[i])) {
+                isPredicted = false;
+            }
+        }
+
+        this.input = snapshot.input;
+        this.lineno = snapshot.lineno;
+        this.cursor = snapshot.cursor;
+
+        return isPredicted;
     },
 
     token: function(type, value) {
@@ -266,12 +290,11 @@ Lexer.prototype = {
     callable: function() {
         return this.parem()
             || this.assignment()
-            //|| this.func_value();
+            || this.func_value();
     },
 
     func_value: function() {
         var startFunc = /^{/;
-        var endArgList = /^:/;
         var endFunc = /^}/;
         var startFuncLine = this.lineno;
         var token;
@@ -280,12 +303,13 @@ Lexer.prototype = {
             var args;
 
             if (args = this.id_list()) {
-                if (!this.scan(endArgList)) {
-                    throw new Error("End of arg list not defined!");
+                if (!this.scan(this.tokens.Colon)) {
+                    throw new Error("Cant't find end of arg list!");
                 }
             }
-            
+
             token = this.token("Func", this.code_block() );
+            token.arg_list = args;
 
             if (!this.scan(endFunc)) {
                 throw Error("Can't find end of function in line " + startCallLine);
@@ -295,15 +319,37 @@ Lexer.prototype = {
         return token;
     },
 
+    id_list: function() {
+        var token;
+        
+        if (this.lookahead([this.tokens.Id, this.tokens.Colon])
+            || this.lookahead([this.tokens.Id, this.tokens.Comma])) {
+            var value;
+            token = this.token("IdList", [this.id()]);
+            while (this.scan(this.tokens.Comma)) {
+                value = this.id();
+                if (!value) {
+                    throw new Error("Can't find an Id at line " + this.lineno);
+                }
+                token.val.push(value);
+            }
+        }
+
+        return token;
+    },
+
     exp_list: function() {
-        var separator = /^,/;
         var token = this.token("ExpList", []);
         var first = this.exp();
 
         if (first) {
             token.val.push(first);
-            while (this.scan(separator)) {
-                token.val.push(this.exp());
+            while (this.scan(this.tokens.Comma)) {
+                var value = this.exp();
+                if (!value) {
+                    throw new Error("Can't find an Expression at line " + this.lineno);
+                }
+                token.val.push(value);
             }
         }
 
@@ -354,10 +400,9 @@ Lexer.prototype = {
     },
 
     id: function() {
-        var id = /^([a-zA-Z_][a-zA-Z0-9_]*)/;
         var captures;
 
-        if (captures = this.scan(id)) {
+        if (captures = this.scan(this.tokens.Id)) {
             return this.token('Id', captures[1]);
         }
     }
