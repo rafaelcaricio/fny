@@ -16,8 +16,8 @@ A more elaborated example of use:
 ```python
     fib = { n:
         if { n: 1 }
-        else 0
-        fib(n - 1) + fib(n - 2)
+        if { !n:  0}
+        else fib(n - 1) + fib(n - 2)
     }
 
     for { i in 10:
