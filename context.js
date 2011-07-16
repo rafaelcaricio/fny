@@ -7,8 +7,8 @@
  * Copyright (c) 2011 Rafael Caricio rafael@caricio.com
  */
 
-var Context = function() {
-    this.stack = [{}];
+var Context = function(builtins) {
+    this.stack = [builtins || {}];
 }
 
 Context.prototype = {

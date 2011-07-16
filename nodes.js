@@ -114,13 +114,41 @@ Div.prototype.execute = function(context) {
     return this.left.execute(context) / this.right.execute(context);
 }
 
-var Print = function(token) {
+var Call = function(token) {
     this.lineno = token.lineno;
+    this.target = null;
+    this.args = null;
 }
 
-Print.prototype.__proto__ = Node.prototype;
-Print.prototype.execute = function(context) {
-    console.log(this.value.execute(context));
+Call.prototype.__proto__ = Node.prototype;
+Call.prototype.execute = function(context) {
+    var targetFunction = context.get(this.target.execute(context));
+    var result;
+    if (targetFunction == undefined) {
+        throw new Error("Undefined function for call at line " + this.lineno);
+    }
+
+    context.increment();
+    result = targetFunction.apply(context, this.args.execute(context));
+    context.pop();
+
+    return result;
+}
+
+var ExpList = function(token) {
+    this.lineno = token.lineno;
+    this.expressions = null;
+}
+
+ExpList.prototype.__proto__ = Node.prototype;
+ExpList.prototype.execute = function(context) {
+    var resultList = [];
+
+    for (var i = 0; i < this.expressions.length; i++) {
+        resultList.push(this.expressions[i].execute(context));
+    }
+
+    return resultList;
 }
 
 module.exports = {
@@ -133,5 +161,6 @@ module.exports = {
     NString: NString,
     Assign: Assign,
     Id: Id,
-    Print: Print
+    Call: Call,
+    ExpList: ExpList
 }

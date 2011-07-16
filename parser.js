@@ -35,10 +35,26 @@ Parser.prototype = {
         return this['parse' + token.type](token);
     },
 
-    parsePrint: function(token) {
-        var print = new nodes.Print(token);
-        print.value = this.parseExp(token.value);
-        return print;
+    parseCall: function(token) {
+        var call = new nodes.Call(token);
+        call.target = this.parseCallable(token.val);
+        call.args = this.parseExpList(token.arg_list);
+        return call;
+    },
+
+    parseExpList: function(token) {
+        var expList = new nodes.ExpList(token);
+
+        expList.expressions = [];
+        for (var i = 0; i < token.val.length; i++) {
+            expList.expressions.push(this.parseExp(token.val[i]));
+        }
+
+        return expList;
+    },
+
+    parseCallable: function(token) {
+        return this['parse' + token.type](token);
     },
 
     parseExp: function(token) {

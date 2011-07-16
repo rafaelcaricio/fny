@@ -149,19 +149,19 @@ vows.describe('The Parser').addBatch({
     'when I parse "print("hello world")"': {
         topic: function() {
             var parser = new Parser('print("hello world")');
-            return parser.parse(new Context());
+            return parser.parse();
         },
         'the return of execution shold be "hello world"': function(topic) {
-            assert.equal(topic.execute(), "hello world");
+            assert.equal(topic.execute(new Context({print: function(value) { return value; } })), "hello world");
         }
     },
     'when I parse "print(1 + 2)"': {
         topic: function() {
             var parser = new Parser('print(1 + 2)');
-            return parser.parse(new Context());
+            return parser.parse();
         },
         'the return of execution shold be "3"': function(topic) {
-            assert.equal(topic.execute(), 3);
+            assert.equal(topic.execute(new Context({print: function(value) { return value; } })), 3);
         }
     }
 }).export(module);
