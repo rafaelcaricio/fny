@@ -302,5 +302,83 @@ vows.describe('The Lexer').addBatch({
                 assert.equal(topic.val, '1');
             }
         }
+    },
+    "when I send '__name__ = 1'": {
+        topic: function() {
+            var lex = new Lexer('__name__ = 1');
+            return lex.next().id;
+        },
+        'the type should be "Id"': function(topic) {
+            assert.equal(topic.type, 'Id');
+        },
+        'the value should be "__name__"': function(topic) {
+            assert.equal(topic.val, '__name__');
+        }
+    },
+    "when I send '\"\"'": {
+        topic: function() {
+            var lex = new Lexer('""');
+            return lex.next();
+        },
+        'the type should be "Str"': function(topic) {
+            assert.equal(topic.type, 'Str');
+        },
+        'the value should be ""': function(topic) {
+            assert.equal(topic.val, '');
+        }
+    },
+    "when I send '\"hello world\"'": {
+        topic: function() {
+            var lex = new Lexer('"hello world"');
+            return lex.next();
+        },
+        'the type should be "Str"': function(topic) {
+            assert.equal(topic.type, 'Str');
+        },
+        'the value should be "hello world"': function(topic) {
+            assert.equal(topic.val, 'hello world');
+        }
+    },
+    "when I send '\"1 + 1\"'": {
+        topic: function() {
+            var lex = new Lexer('"1 + 1"');
+            return lex.next();
+        },
+        'the type should be "Str"': function(topic) {
+            assert.equal(topic.type, 'Str');
+        },
+        'the value should be "1 + 1"': function(topic) {
+            assert.equal(topic.val, '1 + 1');
+        }
+    },
+    "when I send 'print 1'": {
+        topic: function() {
+            var lex = new Lexer('print 1');
+            return lex.next();
+        },
+        'the type should be "Print"': function(topic) {
+            assert.equal(topic.type, 'Print');
+        },
+        'the value type should be "Num"': function(topic) {
+            assert.equal(topic.value.type, 'Num');
+        },
+        'the value should be "1"': function(topic) {
+            assert.equal(topic.value.val, '1');
+        }
+    },
+    "when I send 'print \"hello word!\"'": {
+        topic: function() {
+            var lex = new Lexer('print "hello world!"');
+            return lex.next();
+        },
+        'the type should be "Print"': function(topic) {
+            assert.equal(topic.type, 'Print');
+        },
+        'the value type should be "Num"': function(topic) {
+            assert.equal(topic.value.type, 'Str');
+        },
+        'the value should be "hello world!"': function(topic) {
+            assert.equal(topic.value.val, 'hello world!');
+        }
     }
 }).export(module);
