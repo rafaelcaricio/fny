@@ -16,7 +16,7 @@ A more elaborated example of use:
 ```python
     fib = { n:
         if { n: 1 }
-        if { !n:  0}
+        if { !n: 0 }
         else fib(n - 1) + fib(n - 2)
     }
 
@@ -25,4 +25,4 @@ A more elaborated example of use:
     }
 ```
 
-PS.: All examples currently not work. I'm implementing the language.
+PS.: Examples currently not work. I'm implementing the language.
