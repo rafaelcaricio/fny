@@ -17,7 +17,7 @@ A more elaborated example of use:
     fib = { n:
         if { n: 1 }
         if { !n: 0 }
-        else fib(n - 1) + fib(n - 2)
+        else self(n - 1) + self(n - 2)
     }
 
     for { i in 10:

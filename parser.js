@@ -65,6 +65,16 @@ Parser.prototype = {
         return new nodes.Num(token);
     },
 
+    parseFunc: function(token) {
+        var func = new nodes.Func(token);
+        func.args = this.parseIdList(token.arg_list);
+        return func;
+    },
+
+    parseIdList: function(token) {
+        return new nodes.IdList(token);
+    },
+
     parseBinaryOp: function(exp, token) {
         var binary = new exp(token);
         binary.left = this.parseExp(token.left);
