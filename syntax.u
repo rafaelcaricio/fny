@@ -9,7 +9,18 @@ print sum(2)(3)
 
 if { x == 2:
     k = 2
-}
+} else 3
+
+# if is a value
+print (if { x > 3: sum(2)(2) } else 4) + 4
+
+if { n:
+    casa = n + 3
+    2
+} else { 
+    casa = x - 2
+    x
+}()
 
 a = [];
 for { i in 10:
