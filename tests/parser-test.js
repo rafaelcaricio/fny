@@ -182,36 +182,54 @@ vows.describe('The Parser').addBatch({
             assert.equal(topic.execute(new Context()), 2);
         }
     },
-    'when I parse "myfunc = {x:x+1} myfunc(3)"': {
+    'when I parse "myfunc = {x:x+1}; myfunc(3)"': {
         topic: function() {
-            var parser = new Parser('myfunc = {x:x+1} myfunc(3)');
+            var parser = new Parser('myfunc = {x:x+1}; myfunc(3)');
             return parser.parse();
         },
         'the return of execution shold be "4"': function(topic) {
             assert.equal(topic.execute(new Context()), 4);
         }
     },
-    'when I parse "myfunc = {x: x(1)} myfunc({y: y + 2})"': {
+    'when I parse "myfunc = {x: x(1)}; myfunc({y: y + 2})"': {
         topic: function() {
-            var parser = new Parser('myfunc = {x: x(1)} myfunc({y: y + 2})');
+            var parser = new Parser('myfunc = {x: x(1)}; myfunc({y: y + 2})');
             return parser.parse();
         },
         'the return of execution shold be "3"': function(topic) {
             assert.equal(topic.execute(new Context()), 3);
         }
     },
-    'when I parse "myfunc = {x: a = x b = 1 + 2 a(b)} myfunc({y: y + 2})"': {
+    'when I parse "myfunc = {x: a = x; b = 1 + 2; a(b);}; myfunc({y: y + 2})"': {
         topic: function() {
-            var parser = new Parser('myfunc = {x: a = x b = 1 + 2 a(b)} myfunc({y: y + 2})');
+            var parser = new Parser('myfunc = {x: a = x; b = 1 + 2; a(b)}; myfunc({y: y + 2});');
             return parser.parse();
         },
         'the return of execution shold be "5"': function(topic) {
             assert.equal(topic.execute(new Context()), 5);
         }
     },
-    'when I parse "add = {a, b: a + b} myfunc = {x: a = x b = add(1, 2) a(b)} myfunc({y: add(y, 2)})"': {
+    'when I parse "add = {a, b: a + b}; myfunc = {x: a = x; b = add(1, 2); a(b);}; myfunc({y: add(y, 2)});"': {
         topic: function() {
-            var parser = new Parser('add = {a, b: a + b} myfunc = {x: a = x b = add(1, 2) a(b)} myfunc({y: add(y, 2)})');
+            var parser = new Parser('add = {a, b: a + b}; myfunc = {x: a = x; b = add(1, 2); a(b);}; myfunc({y: add(y, 2)});');
+            return parser.parse();
+        },
+        'the return of execution shold be "5"': function(topic) {
+            assert.equal(topic.execute(new Context()), 5);
+        }
+    },
+    'when I parse "add = {a: {b: a + b}}; add(1)(1);"': {
+        topic: function() {
+            var parser = new Parser('add = {a: {b: a + b}}; add(1)(1);');
+            return parser.parse();
+        },
+        'the return of execution shold be "2"': function(topic) {
+            assert.equal(topic.execute(new Context()), 2);
+        }
+    },
+    'when I parse "add = {a: {b: a + b}}; myfunc = {x: a = x; b = add(1)(2); a(b);}; myfunc({y: add(y)(2)});"': {
+        topic: function() {
+            var parser = new Parser('add={a:{b:a+b}};myfunc={x:a=x;b=add(1)(2);a(b);};myfunc({y:add(y)(2)});');
             return parser.parse();
         },
         'the return of execution shold be "5"': function(topic) {

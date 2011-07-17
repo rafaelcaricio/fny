@@ -446,7 +446,7 @@ vows.describe('The Lexer').addBatch({
     },
     "when I send block": {
         topic: function() {
-            var lex = new Lexer('1\n2');
+            var lex = new Lexer('1; 2');
             return lex.next();
         },
         'the type should be CodeBlock': function(topic) {
@@ -455,7 +455,7 @@ vows.describe('The Lexer').addBatch({
     },
     "when I send block": {
         topic: function() {
-            var lex = new Lexer('1 2');
+            var lex = new Lexer('1 + 2; 3');
             return lex.next();
         },
         'the type should be CodeBlock': function(topic) {
@@ -464,7 +464,7 @@ vows.describe('The Lexer').addBatch({
     },
     "when I send block": {
         topic: function() {
-            var lex = new Lexer('1 + 2 3');
+            var lex = new Lexer('1 + 2; a(-2)');
             return lex.next();
         },
         'the type should be CodeBlock': function(topic) {
@@ -473,16 +473,7 @@ vows.describe('The Lexer').addBatch({
     },
     "when I send block": {
         topic: function() {
-            var lex = new Lexer('1 + 2 a(-2)');
-            return lex.next();
-        },
-        'the type should be CodeBlock': function(topic) {
-            assert.equal(topic.type, 'CodeBlock');
-        }
-    },
-    "when I send block": {
-        topic: function() {
-            var lex = new Lexer('1 + 2 (-1)');
+            var lex = new Lexer('1 + 2; (-1)');
             return lex.next();
         },
         'the type should be CodeBlock': function(topic) {
@@ -576,9 +567,9 @@ vows.describe('The Lexer').addBatch({
             assert.equal(topic.arg_list.val.length, 0);
         }
     },
-    "when I create a func { 2 4 }": {
+    "when I create a func { 2; 4 }": {
         topic: function() {
-            var lex = new Lexer('{ 2 4 }');
+            var lex = new Lexer('{ 2; 4 }');
             return lex.next();
         },
         'the value should be a Func': function(topic) {
@@ -588,9 +579,18 @@ vows.describe('The Lexer').addBatch({
             assert.equal(topic.val.type, 'CodeBlock');
         }
     },
-    "when I create a codeblock myfunc = {x:x+1} myfunc(3)": {
+    "when I create a codeblock myfunc = {x:x+1}; myfunc(3)": {
         topic: function() {
-            var lex = new Lexer('myfunc = {x:x+1} myfunc(3)');
+            var lex = new Lexer('myfunc = {x:x+1}; myfunc(3);');
+            return lex.next();
+        },
+        'the value should be a CodeBlock': function(topic) {
+            assert.equal(topic.type, 'CodeBlock');
+        }
+    },
+    "when I create a codeblock add = {a: {b: a + b}}; add(1)(1)": {
+        topic: function() {
+            var lex = new Lexer('add = {a: {b: a + b}}; add(1)(1)');
             return lex.next();
         },
         'the value should be a CodeBlock': function(topic) {

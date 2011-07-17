@@ -15,14 +15,14 @@ A more elaborated example of use:
 
 ```python
     fib = { n:
-        if { n: 1 }
-        if { !n: 0 }
-        else self(n - 1) + self(n - 2)
-    }
+        if { n == 1: 1 };
+        if { n == 0: 0 };
+        else self(n - 1) + self(n - 2);
+    };
 
     for { i in 10:
-        print(fib(i))
-    }
+        print(fib(i));
+    };
 ```
 
 PS.: Examples currently not work. I'm implementing the language.

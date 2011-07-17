@@ -23,7 +23,7 @@ var Lexer = module.exports = function(input) {
  *
  *    program -> code_block | EOF
  *
- *    code_block -> execution_block ( execution_block )*
+ *    code_block -> execution_block (';' execution_block )*
  *                  | &
  *
  *    execution_block -> stmt | exp
@@ -52,7 +52,7 @@ var Lexer = module.exports = function(input) {
  *              | call
  *              | &
  *
- *    call -> callable '(' exp_list ')'
+ *    call -> callable ( '(' exp_list ')' )*
  *
  *    callable -> parem
  *              | assignment
@@ -91,6 +91,7 @@ Lexer.prototype = {
         'Div': '/',
         'Comma': /^,/,
         'Colon': /^:/,
+        'Semicolon': /^;/,
         'Id': /^([a-zA-Z_][a-zA-Z0-9_]*)/,
     },
 
@@ -166,7 +167,7 @@ Lexer.prototype = {
             token = this.code_block();
 
             if (!token || this.input.length) {
-                console.log(token, this.input);
+                console.log(this.input);
                 throw Error("Invalid input!");
             }
         } else {
@@ -183,8 +184,10 @@ Lexer.prototype = {
             var block = this.token("CodeBlock", [token]);
             var next_token;
 
-            while (next_token = this.execution_block()) {
-                block.val.push(next_token);
+            while (this.scan(this.tokens.Semicolon)) {
+                if (next_token = this.execution_block()) {
+                    block.val.push(next_token);
+                }
             }
 
             if (block.val.length > 1) {
@@ -273,14 +276,17 @@ Lexer.prototype = {
         var token = this.callable();
         var startCallLine = this.lineno;
 
-        if (token && this.scan(startCall)) {
+        if (token) {
+            startCallLine = this.lineno;
 
+            while (this.scan(startCall)) {
 
-            token = this.token("Call", token);
-            token.arg_list = this.exp_list();
+                token = this.token("Call", token);
+                token.arg_list = this.exp_list();
 
-            if (!this.scan(endCall)) {
-                throw Error("Can't find end of call in line " + startCallLine);
+                if (!this.scan(endCall)) {
+                    throw Error("Can't find end of call in line " + startCallLine);
+                }
             }
         }
 
@@ -312,7 +318,7 @@ Lexer.prototype = {
             token.arg_list = args;
 
             if (!this.scan(endFunc)) {
-                throw Error("Can't find end of function in line " + startCallLine);
+                throw Error("Can't find end of function in line " + startFuncLine);
             }
         }
 

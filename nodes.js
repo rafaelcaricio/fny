@@ -10,6 +10,7 @@
 var Node = function Node(){};
 
 Node.prototype.__proto__ = Array.prototype;
+Node.prototype.toString = function() {};
 Node.prototype.execute = function(context) {};
 
 
@@ -18,6 +19,12 @@ var Block = function Block(node){
 };
 
 Block.prototype.__proto__ = Node.prototype;
+Block.prototype.toString = function() {
+    if (this.length) {
+        return this[0].toString();
+    }
+    return "";
+}
 Block.prototype.execute = function(context) {
     var result;
 
@@ -35,6 +42,9 @@ var Num = function(token) {
 }
 
 Num.prototype.__proto__ = Node.prototype;
+Num.prototype.toString = function(context) {
+    return this.value + "";
+}
 Num.prototype.execute = function(context) {
     return parseInt(this.value);
 }
@@ -45,6 +55,9 @@ var Id = function(token) {
 }
 
 Id.prototype.__proto__ = Node.prototype;
+Id.prototype.toString = function() {
+    return this.value;
+}
 Id.prototype.execute = function(context) {
     return context.get(this.value);
 }
@@ -55,6 +68,9 @@ var NString = function(token) {
 }
 
 NString.prototype.__proto__ = Node.prototype;
+NString.prototype.toString = function() {
+    return this.value + "";
+}
 NString.prototype.execute = function(context) {
     return this.value;
 }
@@ -64,6 +80,9 @@ var Assign = function(token) {
 }
 
 Assign.prototype.__proto__ = Node.prototype;
+Assign.prototype.toString = function() {
+    return this.id.toString() + '=' + this.value.toString();
+}
 Assign.prototype.execute = function(context) {
     var result = this.value.execute(context);
     context.push(this.id.value, result);
@@ -77,6 +96,9 @@ var Add = function(token) {
 }
 
 Add.prototype.__proto__ = Node.prototype;
+Add.prototype.toString = function() {
+    return this.left.toString() + "+" + this.right.toString();
+}
 Add.prototype.execute = function(context) {
     return this.left.execute(context) + this.right.execute(context);
 }
@@ -88,6 +110,9 @@ var Sub = function(token) {
 }
 
 Sub.prototype.__proto__ = Node.prototype;
+Sub.prototype.toString = function() {
+    return this.left.toString() + "-" + this.right.toString();
+}
 Sub.prototype.execute = function(context) {
     return this.left.execute(context) - this.right.execute(context);
 }
@@ -99,6 +124,9 @@ var Mult = function(token) {
 }
 
 Mult.prototype.__proto__ = Node.prototype;
+Mult.prototype.toString = function() {
+    return this.left.toString() + "*" + this.right.toString();
+}
 Mult.prototype.execute = function(context) {
     return this.left.execute(context) * this.right.execute(context);
 }
@@ -110,6 +138,9 @@ var Div = function(token) {
 }
 
 Div.prototype.__proto__ = Node.prototype;
+Div.prototype.toString = function() {
+    return this.left.toString() + "/" + this.right.toString();
+}
 Div.prototype.execute = function(context) {
     return this.left.execute(context) / this.right.execute(context);
 }
@@ -120,6 +151,13 @@ var CodeBlock = function(token) {
 }
 
 CodeBlock.prototype.__proto__ = Node.prototype;
+CodeBlock.prototype.toString = function() {
+    var result = [];
+    for (var i = 0; i < this.values.length; i++) {
+        result.push(this.values[i].toString());
+    }
+    return result.join("; ");
+}
 CodeBlock.prototype.execute = function(context) {
     var result;
 
@@ -140,6 +178,13 @@ var IdList = function(token) {
 }
 
 IdList.prototype.__proto__ = Node.prototype;
+IdList.prototype.toString = function() {
+    var ids = [];
+    for (var i = 0; i < this.values.length; i++) {
+        ids.push(this.values[i].value);
+    }
+    return ids.join(",");
+}
 IdList.prototype.execute = function(context) {
     var ids = [];
     for (var i = 0; i < this.values.length; i++) {
@@ -178,10 +223,13 @@ ValueFunc.prototype.execute = function(context, args_values) {
 var Func = function(token) {
     this.lineno = token.lineno;
     this.args_declaration = null;
-    this.value = token.value;
+    this.value = null;
 }
 
 Func.prototype.__proto__ = Node.prototype;
+Func.prototype.toString = function() {
+    return "{" + this.args_declaration.toString() + ":" + this.value.toString() + "}";
+}
 Func.prototype.execute = function(context) {
     return new ValueFunc(context.snapshot(), this.args_declaration.execute(context), this.value);
 }
@@ -193,6 +241,9 @@ var Call = function(token) {
 }
 
 Call.prototype.__proto__ = Node.prototype;
+Call.prototype.toString = function() {
+    return this.target.toString() + "(" + this.args.toString() + ")";
+}
 Call.prototype.execute = function(context) {
     var args_values = this.args.execute(context);
     var targetFunc = this.target.execute(context);
@@ -210,6 +261,15 @@ var ExpList = function(token) {
 }
 
 ExpList.prototype.__proto__ = Node.prototype;
+ExpList.prototype.toString = function() {
+    var resultList = [];
+
+    for (var i = 0; i < this.expressions.length; i++) {
+        resultList.push(this.expressions[i].toString());
+    }
+
+    return resultList.join(",");
+}
 ExpList.prototype.execute = function(context) {
     var resultList = [];
 
