@@ -34,7 +34,7 @@ Person = { nome:
         # introspection in the given context and get a specfic variable
         # definition value.
         # 
-        #   __get__ ( arg1 , arg2, opt):
+        #   __get__ ( arg1 , arg2):
         #
         #      arg1:
         #         the first argument is the function that you 
@@ -43,19 +43,15 @@ Person = { nome:
         #      arg2: 
         #         the secont argument is the name of the variable
         #         that you want to get.
-        # 
-        #      opt:
-        #         is the optional argument. Tell the interpreter what is the 
-        #         arity of the function you want to get.
         #
-        __get__(this, methodName)()
+        __get__(this, methodName)
     }
 };
 
 # the class definition
 Class = { def :
     { method_name:
-        __get__(def, method_name)()
+        __get__(def, method_name)
     }
 };
 
@@ -70,9 +66,9 @@ Animal = Class({
 Class = { super, def :
     { method_name:
         if ( method_name in __expose__(def), {
-            __get__(def, method_name)()
+            __get__(def, method_name)
         }, {
-            __get__(super, method_name)()
+            __get__(super, method_name)
         })
     }
 };
@@ -85,8 +81,8 @@ Pessoa = Class(Animal, { nome:
 });
 
 p = Pessoa("Rafael Caricio");
-print( p("get_nome") );
-print( p("respira") );
+print( p("get_nome")() );
+print( p("respira")() );
 
 # if is a value
 print( if(x > 3, { sum(2)(2) }, { 4 }) + 4 );
