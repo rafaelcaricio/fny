@@ -38,7 +38,7 @@ A more elaborated example of use:
 
     for ( 10, { i:
         print(fib(i));
-    });
+    }, { "" });
 ```
 
 PS.: Examples currently not work. I'm implementing the language.
