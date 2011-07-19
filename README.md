@@ -14,9 +14,26 @@ Example of a simple hello word:
 A more elaborated example of use:
 
 ```python
+    if = { op, _true, _false:
+        op && _true() || _false()
+    };
+
+    for = { number, block, end:
+        this = self;
+        if ( number > 0 , {
+            this(number - 1, block, end) + block(number - 1);
+        }, end() );
+    };
+
     fib = { n:
-        if ( n == 1, { 1 },
-            if ( n == 0, { 0 }, { self(n - 1) + self(n - 2) }));
+        if ( n == 1, { 
+            1
+        },
+        if ( n == 0, { 
+            0
+        }, { 
+            self(n - 1) + self(n - 2)
+        }));
     };
 
     for ( 10, { i:
