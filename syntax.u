@@ -5,15 +5,19 @@ sum = { x:
     }
 };
 
+null = {}();
+true = 1;
+false = 0;
+
 print sum(2)(3);
 
 # if definition
-if = { op, true, false:
-    op && true() || false()
+if = { op, _true, _false:
+    op && _true() || _false()
 };
 
-if = { op, true:
-    if(op, true, {})
+uif = { op, _true:
+    if(op, _true, {})
 };
 
 if ( x == 2, {
@@ -21,68 +25,6 @@ if ( x == 2, {
 }, {
     3
 });
-
-
-# implementing all class definition at all
-Person = { nome:
-    this = self;
-    getNome = { 
-        nome
-    };
-    { methodName:
-        # The __get__ method are implemented by the interpreter for
-        # introspection in the given context and get a specfic variable
-        # definition value.
-        # 
-        #   __get__ ( arg1 , arg2):
-        #
-        #      arg1:
-        #         the first argument is the function that you 
-        #         want to introspect.
-        #
-        #      arg2: 
-        #         the secont argument is the name of the variable
-        #         that you want to get.
-        #
-        __get__(this, methodName)
-    }
-};
-
-# the class definition
-Class = { def :
-    { method_name:
-        __get__(def, method_name)
-    }
-};
-
-# the use of generic class definition
-Animal = Class({
-    respira = {
-        print("respirou!")
-    }
-});
-
-# class iherints definition
-Class = { super, def :
-    { method_name:
-        if ( method_name in __expose__(def), {
-            __get__(def, method_name)
-        }, {
-            __get__(super, method_name)
-        })
-    }
-};
-
-# the example of use
-Pessoa = Class(Animal, { nome:
-    get_nome = { 
-        nome
-    }
-});
-
-p = Pessoa("Rafael Caricio");
-print( p("get_nome")() );
-print( p("respira")() );
 
 # if is a value
 print( if(x > 3, { sum(2)(2) }, { 4 }) + 4 );
@@ -95,41 +37,35 @@ if ( n, {
     x;
 });
 
-while { i < a[1]:
-    print i;
-    i--
+for = { number, block, end:
+    this = self;
+    if ( number > 0 , {
+        this(number - 1, block, end) + block(number - 1);
+    }, end() );
 };
 
-for = { number, block:
-    while { number > 0 :
-        number--;
-        block(number)
-    }
-}
+a = for(10, { i : [i] }, { [] });
 
-a = [];
-for(10, { i :
-    a[i] = i
-});
-
-map = { array, func:
-    x = len(array);
-    while { x > 0:
-        x--;
-        func(array[x - 1])
-    }
+map = { array, func, end:
+    for (len(array), { i:
+        func(array[i]);
+    }, if (end, end, { [] } );
 };
 
 forEach = map
 
-map(a, {c:
-    print(c + 1)
-});
+map(["Hello", "world", "nice", "friends", "!"], {c:
+    print(c)
+}, { "" });
+
+print(map(["Hello", "world", "nice", "friends", "!"], { s: s + " " }, { "" }));
 
 filter = { array, func:
     forEach( map(array, func), { item:
         if ( item, {
-            item
+           [ item ]
+        }, {
+           [] 
         })
     })
 };
