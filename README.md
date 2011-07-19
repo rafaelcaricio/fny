@@ -26,14 +26,14 @@ A more elaborated example of use:
     };
 
     fib = { n:
-        this = self;
+        fib = self;
         if ( n == 1, { 
             1
         },
         if ( n == 0, { 
             0
         }, { 
-            this(n - 1) + this(n - 2)
+            fib(n - 1) + fib(n - 2)
         }));
     };
 
