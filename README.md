@@ -3,8 +3,6 @@ Fny Programming Language
 
 A toy programming language implemented on top of Node.js.
 
-The inspiration comes from Python, Lua, Erlang and C programming languages.
-
 Example of a simple hello word:
 
 ```python
