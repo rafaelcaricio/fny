@@ -40,12 +40,27 @@ var Lexer = module.exports = function(input) {
  *
  *    mult_exp -> div_exp ( '*' div_exp )*
  *
- *    div_exp -> unary_exp ( '/' unary_exp )*
+ *    div_exp -> gt_exp ( '/' gt_exp )*
+ *
+ *    gt_exp -> lt_exp ( '>' lt_exp )*
+ * 
+ *    lt_exp -> gte_exp ( '<' gte_exp )*
+ *
+ *    gte_exp -> lte_exp ( '>=' lte_exp )*
+ *
+ *    lte_exp -> equal_exp ( '<=' equal_exp )*
+ *
+ *    equal_exp -> and_exp ( '==' and_exp )*
+ *
+ *    and_exp -> or_exp ( '&&' or_exp )*
+ *
+ *    or_exp -> unary_exp ( '||' unary_exp )*
  *
  *    unary_exp -> '++' exp
  *              | '--' exp
  *              | value_exp ( '--' )?
  *              | value_exp ( '++' )?
+ *              | logical_op
  *
  *    value_exp -> num
  *              | string
@@ -89,6 +104,13 @@ Lexer.prototype = {
         'Sub': '-',
         'Mult': '*',
         'Div': '/',
+        'GreaterThan': '>',
+        'LowerThan': '<',
+        'GreaterThanOrEqual': '>=',
+        'LowerThanOrEqual': '<=',
+        'Equal': '==',
+        'And': '&&',
+        'Or': '||',
         'Comma': /^,/,
         'Colon': /^:/,
         'Semicolon': /^;/,
