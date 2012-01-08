@@ -48,7 +48,9 @@ var Lexer = module.exports = function(input) {
  *
  *    gte_exp -> lte_exp ( '>=' lte_exp )*
  *
- *    lte_exp -> equal_exp ( '<=' equal_exp )*
+ *    lte_exp -> diff_exp ( '<=' diff_exp )*
+ *
+ *    diff_exp -> equal_exp ( '==' equal_exp )*
  *
  *    equal_exp -> and_exp ( '==' and_exp )*
  *
@@ -108,6 +110,7 @@ Lexer.prototype = {
         'LowerThan': '<',
         'GreaterThanOrEqual': '>=',
         'LowerThanOrEqual': '<=',
+        'Different': '!=',
         'Equal': '==',
         'And': '&&',
         'Or': '||',
@@ -116,13 +119,6 @@ Lexer.prototype = {
         'Semicolon': /^;/,
         'Id': /^([a-zA-Z_][a-zA-Z0-9_]*)/,
     },
-
-    keywords: [
-        'if',
-        'for',
-        'while',
-        'in'
-    ],
 
     scan: function(regexp) {
         var captures;
@@ -233,7 +229,39 @@ Lexer.prototype = {
     },
 
     binary_exp: function() {
-        return this.add_exp();
+        return this.diff_exp();
+    },
+
+    diff_exp: function(left) {
+        return this.binary_exp_template(/^!=/, 'Different', 'equal_exp', 'equal_exp');
+    },
+
+    equal_exp: function(left) {
+        return this.binary_exp_template(/^==/, 'Equal', 'and_exp', 'and_exp');
+    },
+
+    and_exp: function(left) {
+        return this.binary_exp_template(/^&&/, 'And', 'or_exp', 'or_exp');
+    },
+
+    or_exp: function(left) {
+        return this.binary_exp_template(/^\|\|/, 'Or', 'gt_exp', 'gt_exp');
+    },
+
+    gt_exp: function(left) {
+        return this.binary_exp_template(/^>/, 'GreaterThan', 'lt_exp', 'lt_exp');
+    },
+
+    lt_exp: function(left) {
+        return this.binary_exp_template(/^</, 'LowerThan', 'gte_exp', 'gte_exp');
+    },
+
+    gte_exp: function(left) {
+        return this.binary_exp_template(/^>=/, 'GreaterThanOrEqual', 'lte_exp', 'lte_exp');
+    },
+
+    lte_exp: function(left) {
+        return this.binary_exp_template(/^<=/, 'LowerThanOrEqual', 'add_exp', 'add_exp');
     },
 
     add_exp: function() {

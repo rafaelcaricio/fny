@@ -596,5 +596,41 @@ vows.describe('The Lexer').addBatch({
         'the value should be a CodeBlock': function(topic) {
             assert.equal(topic.type, 'CodeBlock');
         }
+    },
+    "when I avaluate a boolean expression ==": {
+        topic: function() {
+            var lex = new Lexer('1 == 1');
+            return lex.next();
+        },
+        'the value should be Equal expression': function(topic) {
+            assert.equal(topic.type, 'Equal');
+        }
+    },
+    "when I avaluate a boolean expression >": {
+        topic: function() {
+            var lex = new Lexer('2 > 1');
+            return lex.next();
+        },
+        'the value should be GreaterThan expression': function(topic) {
+            assert.equal(topic.type, 'GreaterThan');
+        }
+    },
+    "when I avaluate a boolean expression <": {
+        topic: function() {
+            var lex = new Lexer('2 < 3 + 1');
+            return lex.next();
+        },
+        'the value should be LowerThan expression': function(topic) {
+            assert.equal(topic.type, 'LowerThan');
+        }
+    },
+    "when I avaluate a boolean expression &&": {
+        topic: function() {
+            var lex = new Lexer('2 < 3 + 1 && 4 > 2');
+            return lex.next();
+        },
+        'the value should be And expression': function(topic) {
+            assert.equal(topic.type, 'And');
+        }
     }
 }).export(module);
