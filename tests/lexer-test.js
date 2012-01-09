@@ -641,5 +641,14 @@ vows.describe('The Lexer').addBatch({
         'the value should be And expression': function(topic) {
             assert.equal(topic.type, 'Or');
         }
+    },
+    "when I avaluate a boolean basic expression": {
+        topic: function() {
+            var lex = new Lexer('a = 1; a == 2;');
+            return lex.next();
+        },
+        'the value should be And expression': function(topic) {
+            assert.equal(topic.type, 'CodeBlock');
+        }
     }
 }).export(module);

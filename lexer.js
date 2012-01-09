@@ -416,16 +416,18 @@ Lexer.prototype = {
     },
 
     assignment: function() {
-        var assignment = /^=/;
-        var token = this.id();
+        var assignment = /^=/,
+            token = this.id();
 
-        if (token && this.scan(assignment)) {
-            var aux = this.token('Assign', '=');
-            aux.id = token;
-            if (aux.value = this.exp()) {
-                token = aux;
-            } else {
-                throw new Error("Expected value to assign in line " + this.lineno);
+        if (!this.lookahead([/^==/])) {
+            if (token && this.scan(assignment)) {
+                var aux = this.token('Assign', '=');
+                aux.id = token;
+                if (aux.value = this.exp()) {
+                    token = aux;
+                } else {
+                    throw new Error("Expected value to assign in line " + this.lineno);
+                }
             }
         }
 
