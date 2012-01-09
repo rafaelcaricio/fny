@@ -122,14 +122,17 @@ Lexer.prototype = {
     },
 
     scan: function(regexp) {
-        var captures;
-        var blankCaptures;
+        var captures,
+            blankCaptures,
+            linesCaptures;
 
-        if (/^\n/.exec(this.input)) {
-            this.lineno++;
+        if (linesCaptures = /^\n+/.exec(this.input)) {
+            this.lineno += linesCaptures[0].length;
             this.cursor = 0;
-            this.consume(1);
-        } else if (blankCaptures = /^[ \r\t]+/.exec(this.input)) {
+            this.consume(linesCaptures[0].length);
+        }
+
+        if (blankCaptures = /^[\r\t\s]+/.exec(this.input)) {
             this.consume(blankCaptures[0].length);
         }
 
