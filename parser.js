@@ -21,7 +21,7 @@ Parser.prototype = {
         block.lineno = this.lexer.lineno;
 
         for (var token = this.lexer.next();
-                token.type != 'EOF'; 
+                token.type != 'EOF';
                 token = this.lexer.next()) {
 
             block.push(this.parseProgram(token));
@@ -67,7 +67,10 @@ Parser.prototype = {
 
     parseFunc: function(token) {
         var func = new nodes.Func(token);
-        func.value = this.parseCallable(token.val);
+
+        if (token.val) {
+            func.value = this.parseCallable(token.val);
+        }
         if (token.arg_list) {
             func.args_declaration = this.parseIdList(token.arg_list);
         }

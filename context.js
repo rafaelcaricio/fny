@@ -16,7 +16,6 @@ var Context = function(builtins) {
             arg_list: ['arg'],
             execute: function(execContext, argsValues) {
                 builtins.print(argsValues[0]);
-                return 1;
             }
         });
     }
@@ -34,7 +33,7 @@ Context.prototype = {
 
     get: function(id) {
         for (var i = this.stack.length - 1; i >= 0; i--) {
-            if (this.stack[i][id]) {
+            if (this.stack[i][id] || this.stack[i][id] == 0) {
                 return this.stack[i][id];
             }
         }

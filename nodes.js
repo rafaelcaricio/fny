@@ -356,7 +356,11 @@ ValueFunc.prototype.execute = function(context, args_values) {
         }
     }
 
-    result = this.func.execute(context);
+    if (this.func) {
+        result = this.func.execute(context);
+    } else {
+        result = 0;
+    }
 
     context.pop();
     return result;
@@ -374,13 +378,17 @@ Func.prototype.toString = function() {
     if (this.args_declaration) {
         result += this.args_declaration.toString() + ":";
     }
-    return result + this.value.toString() + "}";
+    if (this.value) {
+        result += this.value.toString();
+    }
+    return result + "}";
 }
 Func.prototype.execute = function(context) {
     var argsValues;
     if (this.args_declaration) {
         argsValues = this.args_declaration.execute(context);
     }
+
     return new ValueFunc(context.snapshot(), argsValues, this.value);
 }
 

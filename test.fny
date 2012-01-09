@@ -1,0 +1,17 @@
+
+if = { op, _true, _false:
+        (op && (_true() || 1)) || (_false() || 1)
+    };
+
+
+for = { counter :
+    print(counter);
+    this = self;
+    if (counter > 1, {
+        this(counter - 1);
+    }, {
+        print("fim!");
+    });
+};
+
+for(3);
