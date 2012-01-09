@@ -10,16 +10,15 @@
 var Context = function(builtins) {
     this.stack = [];
     this.increment();
+    var self = this;
     if (builtins) {
-        for (var i = 0; i < builtins.length; i++) {
-            this.push("print", {
-                arg_list: [1],
-                execute: function(execContext) {
-                    var x = execContext.get(1);
-                    return builtins["print"](x);
-                }
-            });
-        }
+        this.push("print", {
+            arg_list: ['arg'],
+            execute: function(execContext, argsValues) {
+                builtins.print(argsValues[0]);
+                return 1;
+            }
+        });
     }
 }
 

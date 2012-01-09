@@ -19,8 +19,7 @@ function main() {
             var parser = new Parser(contents),
                 program = parser.parse();
 
-            process.stdout.write('<- ');
-            console.log(program.execute(new Context()));
+            program.execute(new Context({print: function(x){ console.log(x); }}));
         });
     } else {
         console.log('[NOTE] You need to tell me what file you want to run.');

@@ -240,15 +240,15 @@ Lexer.prototype = {
     },
 
     equal_exp: function(left) {
-        return this.binary_exp_template(/^==/, 'Equal', 'and_exp', 'and_exp');
-    },
-
-    and_exp: function(left) {
-        return this.binary_exp_template(/^&&/, 'And', 'or_exp', 'or_exp');
+        return this.binary_exp_template(/^==/, 'Equal', 'or_exp', 'or_exp');
     },
 
     or_exp: function(left) {
-        return this.binary_exp_template(/^\|\|/, 'Or', 'gt_exp', 'gt_exp');
+        return this.binary_exp_template(/^\|\|/, 'Or', 'and_exp', 'and_exp');
+    },
+
+    and_exp: function(left) {
+        return this.binary_exp_template(/^&&/, 'And', 'gt_exp', 'gt_exp');
     },
 
     gt_exp: function(left) {

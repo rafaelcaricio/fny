@@ -173,12 +173,8 @@ And.prototype.toString = function() {
     return this.left.toString() + " && " + this.right.toString();
 }
 And.prototype.execute = function(context) {
-    if (this.left.execute(context)) {
-        if (this.right.execute(context)) {
-            return 1;
-        } else {
-            return 0;
-        }
+    if (this.left.execute(context) && this.right.execute(context)) {
+        return 1;
     } else {
         return 0;
     }
@@ -194,8 +190,7 @@ Or.prototype.toString = function() {
     return this.left.toString() + " || " + this.right.toString();
 }
 Or.prototype.execute = function(context) {
-    var step1 = this.left.execute(context);
-    if (step1) {
+    if (this.left.execute(context)) {
         return 1;
     } else if (this.right.execute(context)) {
         return 1;
@@ -349,12 +344,15 @@ ValueFunc.prototype.execute = function(context, args_values) {
     context.increment();
 
     context.bind(this.snapshot);
+    context.push('self', new ValueFunc(this.snapshot, this.arg_list, this.func));
 
     if ((args_values && this.arg_list) && (args_values.length > this.arg_list.length)) {
         throw new Error("The target function have a small size of arguments. At line " + this.lineno);
     } else {
-        for (var i = 0; i < args_values.length; i++) {
-            context.push(this.arg_list[i], args_values[i]);
+        if (this.arg_list) {
+            for (var i = 0; i < args_values.length; i++) {
+                context.push(this.arg_list[i], args_values[i]);
+            }
         }
     }
 
