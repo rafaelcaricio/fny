@@ -145,6 +145,150 @@ Div.prototype.execute = function(context) {
     return this.left.execute(context) / this.right.execute(context);
 }
 
+var Different = function(token) {
+    this.lineno = token.lineno;
+    this.left = null;
+    this.right = null;
+}
+Different.prototype.__proto__ = Node.prototype;
+Different.prototype.toString = function() {
+    return this.left.toString() + " != " + this.right.toString();
+}
+Different.prototype.execute = function(context) {
+    if (this.left.execute(context) != this.right.execute(context)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+var And = function(token) {
+    this.lineno = token.lineno;
+    this.left = null;
+    this.right = null;
+}
+
+And.prototype.__proto__ = Node.prototype;
+And.prototype.toString = function() {
+    return this.left.toString() + " && " + this.right.toString();
+}
+And.prototype.execute = function(context) {
+    if (this.left.execute(context)) {
+        if (this.right.execute(context)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return 0;
+    }
+}
+
+var Or = function(token) {
+    this.lineno = token.lineno;
+    this.left = null;
+    this.right = null;
+}
+Or.prototype.__proto__ = Node.prototype;
+Or.prototype.toString = function() {
+    return this.left.toString() + " || " + this.right.toString();
+}
+Or.prototype.execute = function(context) {
+    var step1 = this.left.execute(context);
+    if (step1) {
+        return 1;
+    } else if (this.right.execute(context)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+var Equal = function(token) {
+    this.lineno = token.lineno;
+    this.left = null;
+    this.right = null;
+}
+Equal.prototype.__proto__ = Node.prototype;
+Equal.prototype.toString = function() {
+    return this.left.toString() + " == " + this.right.toString();
+}
+Equal.prototype.execute = function(context) {
+    if (this.left.execute(context) == this.right.execute(context)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+var LowerThanOrEqual = function(token) {
+    this.lineno = token.lineno;
+    this.left = null;
+    this.right = null;
+}
+LowerThanOrEqual.prototype.__proto__ = Node.prototype;
+LowerThanOrEqual.prototype.toString = function() {
+    return this.left.toString() + " <= " + this.right.toString();
+}
+LowerThanOrEqual.prototype.execute = function(context) {
+    if (this.left.execute(context) <= this.right.execute(context)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+var LowerThan = function(token) {
+    this.lineno = token.lineno;
+    this.left = null;
+    this.right = null;
+}
+LowerThan.prototype.__proto__ = Node.prototype;
+LowerThan.prototype.toString = function() {
+    return this.left.toString() + " < " + this.right.toString();
+}
+LowerThan.prototype.execute = function(context) {
+    if (this.left.execute(context) < this.right.execute(context)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+var GreaterThanOrEqual = function(token) {
+    this.lineno = token.lineno;
+    this.left = null;
+    this.right = null;
+}
+GreaterThanOrEqual.prototype.__proto__ = Node.prototype;
+GreaterThanOrEqual.prototype.toString = function() {
+    return this.left.toString() + " >= " + this.right.toString();
+}
+GreaterThanOrEqual.prototype.execute = function(context) {
+    if (this.left.execute(context) >= this.right.execute(context)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+var GreaterThan = function(token) {
+    this.lineno = token.lineno;
+    this.left = null;
+    this.right = null;
+}
+GreaterThan.prototype.__proto__ = Node.prototype;
+GreaterThan.prototype.toString = function() {
+    return this.left.toString() + " > " + this.right.toString();
+}
+GreaterThan.prototype.execute = function(context) {
+    if (this.left.execute(context) > this.right.execute(context)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 var CodeBlock = function(token) {
     this.lineno = token.lineno;
     this.values = [];
@@ -206,7 +350,7 @@ ValueFunc.prototype.execute = function(context, args_values) {
 
     context.bind(this.snapshot);
 
-    if (args_values.length > this.arg_list.length) {
+    if ((args_values && this.arg_list) && (args_values.length > this.arg_list.length)) {
         throw new Error("The target function have a small size of arguments. At line " + this.lineno);
     } else {
         for (var i = 0; i < args_values.length; i++) {
@@ -228,10 +372,18 @@ var Func = function(token) {
 
 Func.prototype.__proto__ = Node.prototype;
 Func.prototype.toString = function() {
-    return "{" + this.args_declaration.toString() + ":" + this.value.toString() + "}";
+    var result = "{";
+    if (this.args_declaration) {
+        result += this.args_declaration.toString() + ":";
+    }
+    return result + this.value.toString() + "}";
 }
 Func.prototype.execute = function(context) {
-    return new ValueFunc(context.snapshot(), this.args_declaration.execute(context), this.value);
+    var argsValues;
+    if (this.args_declaration) {
+        argsValues = this.args_declaration.execute(context);
+    }
+    return new ValueFunc(context.snapshot(), argsValues, this.value);
 }
 
 var Call = function(token) {
@@ -283,6 +435,14 @@ ExpList.prototype.execute = function(context) {
 module.exports = {
     Block: Block,
     Num: Num,
+    Or: Or,
+    And: And,
+    LowerThanOrEqual: LowerThanOrEqual,
+    GreaterThanOrEqual: GreaterThanOrEqual,
+    GreaterThan: GreaterThan,
+    LowerThan: LowerThan,
+    Different: Different,
+    Equal: Equal,
     Add: Add,
     Sub: Sub,
     Mult: Mult,

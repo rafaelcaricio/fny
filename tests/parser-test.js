@@ -235,5 +235,53 @@ vows.describe('The Parser').addBatch({
         'the return of execution shold be "5"': function(topic) {
             assert.equal(topic.execute(new Context()), 5);
         }
+    },
+    'when I parse "1 != 2"': {
+        topic: function() {
+            var parser = new Parser('1 != 2');
+            return parser.parse();
+        },
+        'the return of execution shold be "1"': function(topic) {
+            assert.equal(topic.execute(new Context()), 1);
+        },
+        'the recognized code should be 1 != 2': function(topic) {
+            assert.equal(topic.toString(), '1 != 2');
+        }
+    },
+    'when I parse "1 == 1 + 1"': {
+        topic: function() {
+            var parser = new Parser('1 == 1 + 1');
+            return parser.parse();
+        },
+        'the return of execution shold be "0"': function(topic) {
+            assert.equal(topic.execute(new Context()), 0);
+        },
+        'the recognized code should be 1 == 1 + 1': function(topic) {
+            assert.equal(topic.toString(), '1 == 1+1');
+        }
+    },
+    'when I parse "2 < 3 && 4 > 3"': {
+        topic: function() {
+            var parser = new Parser('2 < 3 && 4 > 3');
+            return parser.parse();
+        },
+        'the return of execution shold be "1"': function(topic) {
+            assert.equal(topic.execute(new Context()), 1);
+        },
+        'the recognized code should be 2 < 3 && 4 > 3': function(topic) {
+            assert.equal(topic.toString(), '2 < 3 && 4 > 3');
+        }
+    },
+    'when I parse "2 < 3 || 4 < 3"': {
+        topic: function() {
+            var parser = new Parser('2 < 3 || 4 < 3');
+            return parser.parse();
+        },
+        'the return of execution shold be "1"': function(topic) {
+            assert.equal(topic.execute(new Context()), 1);
+        },
+        'the recognized code should be 2 < 3 || 4 < 3': function(topic) {
+            assert.equal(topic.toString(), '2 < 3 || 4 < 3');
+        }
     }
 }).export(module);

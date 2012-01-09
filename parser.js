@@ -68,7 +68,9 @@ Parser.prototype = {
     parseFunc: function(token) {
         var func = new nodes.Func(token);
         func.value = this.parseCallable(token.val);
-        func.args_declaration = this.parseIdList(token.arg_list);
+        if (token.arg_list) {
+            func.args_declaration = this.parseIdList(token.arg_list);
+        }
         return func;
     },
 
@@ -112,7 +114,51 @@ Parser.prototype = {
     parseDiv: function(token) {
         return this.parseBinaryOp(nodes.Div, token);
     },
-    
+
+    parseDifferent: function(token) {
+        return this.parseBinaryOp(nodes.Different, token);
+    },
+
+    parseEqual: function(token) {
+        return this.parseBinaryOp(nodes.Equal, token);
+    },
+
+    parseGreaterThanOrEqual: function(token) {
+        return this.parseBinaryOp(nodes.GreaterThanOrEqual, token);
+    },
+
+    parseLowerThanOrEqual: function(token) {
+        return this.parseBinaryOp(nodes.LowerThanOrEqual, token);
+    },
+
+    parseGreaterThan: function(token) {
+        return this.parseBinaryOp(nodes.GreaterThan, token);
+    },
+
+    parseLowerThan: function(token) {
+        return this.parseBinaryOp(nodes.LowerThan, token);
+    },
+
+    parseAnd: function(token) {
+        return this.parseBinaryOp(nodes.And, token);
+    },
+
+    parseOr: function(token) {
+        return this.parseBinaryOp(nodes.Or, token);
+    },
+
+    parseEqual: function(token) {
+        return this.parseBinaryOp(nodes.Equal, token);
+    },
+
+    parseEqual: function(token) {
+        return this.parseBinaryOp(nodes.Equal, token);
+    },
+
+    parseEqual: function(token) {
+        return this.parseBinaryOp(nodes.Equal, token);
+    },
+
     parseStr: function(token) {
         return new nodes.NString(token)
     },

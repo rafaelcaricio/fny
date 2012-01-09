@@ -7,6 +7,7 @@
  * Copyright (c) 2011 Rafael Caricio rafael@caricio.com
  */
 
+
 var Lexer = module.exports = function(input) {
     if (input == null) {
         throw new Error('An input value should be passed!');
@@ -185,7 +186,6 @@ Lexer.prototype = {
             token = this.code_block();
 
             if (!token || this.input.length) {
-                console.log(this.input);
                 throw Error("Invalid input!");
             }
         } else {
